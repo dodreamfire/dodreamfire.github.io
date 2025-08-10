@@ -142,19 +142,26 @@
 
 #memoList button.del-btn {
   position: absolute;
-  right: 10px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
   background: #d62828;
   border: none;
   color: white;
   font-weight: 700;
-  font-size: 0.75rem;
-  padding: 2px 8px;
-  border-radius: 4px;
+  font-size: 1rem; /* 기존 0.75rem에서 살짝 키움 */
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
   cursor: pointer;
   line-height: 1;
-  white-space: nowrap; /* 버튼이 줄 바꿈 안되도록 */
+  text-align: center;
+  white-space: nowrap;
+  user-select: none;
+}
+#memoList button.del-btn:hover {
+  background: #a82020;
 }
 
   #memoList button.del-btn:hover {
