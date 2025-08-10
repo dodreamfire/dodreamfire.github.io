@@ -1,286 +1,231 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>두드림소방 | 일정관리</title>
-  <meta name="description" content="두드림소방의 전문 일정관리 페이지입니다. 안전한 소방시설 시공과 관리를 위한 체계적인 일정관리를 지원합니다." />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet" />
-  <style>
-    /* Reset & 기본 스타일 */
-    * {
-      box-sizing: border-box;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>두드림소방 일정관리 (월별+일별 메모)</title>
+<style>
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #fefefe;
+    color: #333;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+    max-width: 900px;
+    width: 100%;
+  }
+  header img {
+    height: 50px;
+  }
+  header h1 {
+    color: #d62828;
+    margin: 0;
+  }
+
+  /* 월 선택 드롭다운 */
+  #monthSelectContainer {
+    max-width: 900px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  #monthSelect {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 1.1rem;
+    border-radius: 6px;
+    border: 1.5px solid #ccc;
+    cursor: pointer;
+    transition: border-color 0.3s;
+  }
+  #monthSelect:focus {
+    outline: none;
+    border-color: #d62828;
+  }
+
+  /* 달력 */
+  table#calendar {
+    width: 100%;
+    max-width: 900px;
+    border-collapse: collapse;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+    user-select: none;
+  }
+  #calendar th, #calendar td {
+    border: 1px solid #ddd;
+    padding: 10px 5px;
+    text-align: center;
+    vertical-align: top;
+    height: 100px;
+    position: relative;
+    cursor: pointer;
+  }
+  #calendar th {
+    background-color: #d62828;
+    color: white;
+    font-weight: 700;
+  }
+  #calendar td:hover {
+    background-color: #ffe5e0;
+  }
+  #calendar td.selected {
+    border: 3px solid #d62828;
+    background-color: #fff0f0;
+  }
+  .date-number {
+    font-weight: 700;
+    margin-bottom: 6px;
+    user-select: text;
+  }
+  .memo-preview {
+    font-size: 0.8rem;
+    color: #555;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+    user-select: text;
+  }
+  .memo-dot {
+    width: 9px;
+    height: 9px;
+    background: #d62828;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+  }
+
+  /* 메모영역 */
+  #memoArea {
+    max-width: 900px;
+    width: 100%;
+    margin-top: 30px;
+    background: white;
+    border-radius: 10px;
+    padding: 25px 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    user-select: text;
+  }
+  #memoArea h3 {
+    color: #d62828;
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+  #selectedDateDisplay {
+    font-weight: 700;
+  }
+  #memoList {
+    list-style: none;
+    padding-left: 0;
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  #memoList li {
+    padding: 10px 50px 10px 15px;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    font-size: 1rem;
+    word-break: break-word;
+  }
+  #memoList li:last-child {
+    border-bottom: none;
+  }
+  #memoList li button {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #d62828;
+    border: none;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  #memoList li button:hover {
+    background: #a32121;
+  }
+  #newMemo {
+    width: 100%;
+    height: 90px;
+    border-radius: 8px;
+    padding: 12px 14px;
+    resize: vertical;
+    border: 1.5px solid #ccc;
+    font-size: 1rem;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: border-color 0.3s ease;
+  }
+  #newMemo:focus {
+    border-color: #d62828;
+    outline: none;
+  }
+  #addMemoBtn {
+    margin-top: 15px;
+    float: right;
+    background: #d62828;
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  #addMemoBtn:hover {
+    background: #a32121;
+  }
+
+  footer {
+    margin-top: 50px;
+    font-size: 0.9rem;
+    color: #666;
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
+    user-select: none;
+  }
+
+  @media (max-width: 600px){
+    #calendar th, #calendar td {
+      height: 80px;
+      padding: 6px 4px;
+      font-size: 0.85rem;
     }
-    body {
-      margin: 0; padding: 0;
-      font-family: 'Noto Sans KR', sans-serif;
-      background-color: #fefefe;
-      color: #333;
-      line-height: 1.5;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
+    #memoArea {
       padding: 20px 15px;
     }
-
-    /* 상단 헤더 - 로고 + 회사명 */
-    header {
-      width: 100%;
-      max-width: 900px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 30px;
-    }
-    header img {
-      height: 50px;
-      width: auto;
-    }
-    header h1 {
-      font-size: 1.8rem;
-      color: #d62828;
-      margin: 0;
-      user-select: none;
-    }
-
-    /* 네비게이션 (월 이동 버튼 + 현재 월) */
-    .nav-buttons {
-      width: 100%;
-      max-width: 900px;
-      text-align: center;
-      margin-bottom: 15px;
-      user-select: none;
-    }
-    .nav-buttons button {
-      background-color: #d62828;
-      border: none;
-      color: white;
-      font-weight: 700;
-      padding: 10px 18px;
-      margin: 0 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background-color 0.3s ease;
-    }
-    .nav-buttons button:hover,
-    .nav-buttons button:focus {
-      background-color: #a32121;
-      outline: none;
-    }
-    #currentMonth {
-      font-weight: 700;
-      font-size: 1.3rem;
-      vertical-align: middle;
-      user-select: text;
-    }
-
-    /* 달력 스타일 */
-    table#calendar {
-      width: 100%;
-      max-width: 900px;
-      border-collapse: collapse;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-      border-radius: 10px;
-      overflow: hidden;
-      background-color: white;
-      user-select: none;
-    }
-    #calendar th, #calendar td {
-      border: 1px solid #ddd;
-      text-align: center;
-      vertical-align: top;
-      padding: 10px 6px;
-      height: 110px;
-      position: relative;
-      cursor: pointer;
-      transition: background-color 0.25s ease;
-      word-break: break-word;
-    }
-    #calendar th {
-      background-color: #d62828;
-      color: white;
-      font-weight: 700;
-      font-size: 1rem;
-      user-select: none;
-    }
-    #calendar td:hover {
-      background-color: #ffe5e0;
-    }
-    #calendar td.selected {
-      border: 3px solid #d62828;
-      background-color: #fff0f0;
-    }
-    /* 오늘 날짜 강조 */
-    #calendar td.today {
-      box-shadow: inset 0 0 10px 2px #d62828aa;
-    }
-    /* 날짜 숫자 */
-    .date-number {
-      font-weight: 700;
-      font-size: 1.15rem;
-      margin-bottom: 8px;
-      user-select: text;
-    }
-    /* 메모 미리보기 */
-    .memo-preview {
-      font-size: 0.8rem;
-      color: #555;
-      line-height: 1.15em;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      margin-bottom: 4px;
-      user-select: text;
-    }
-    /* 메모 점 표시 */
-    .memo-dot {
-      width: 9px;
-      height: 9px;
-      background: #d62828;
-      border-radius: 50%;
-      position: absolute;
-      bottom: 6px;
-      right: 6px;
-    }
-
-    /* 메모 영역 */
-    #memoArea {
-      width: 100%;
-      max-width: 900px;
-      background: white;
-      margin-top: 25px;
-      border-radius: 10px;
-      padding: 25px 30px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      user-select: text;
-    }
-    #memoArea h3 {
-      margin-top: 0;
-      color: #d62828;
-      font-weight: 700;
-      font-size: 1.4rem;
-      margin-bottom: 18px;
-    }
-    #selectedDateDisplay {
-      font-weight: 700;
-      color: #d62828;
-      font-size: 1.2rem;
-      user-select: text;
-    }
-    #memoList {
-      list-style: none;
-      padding-left: 0;
-      max-height: 220px;
-      overflow-y: auto;
-      margin-bottom: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-    #memoList li {
-      padding: 10px 48px 10px 15px;
-      border-bottom: 1px solid #eee;
-      position: relative;
-      word-break: break-word;
-      font-size: 1rem;
-    }
-    #memoList li:last-child {
-      border-bottom: none;
-    }
-    #memoList li button {
-      position: absolute;
-      top: 50%;
-      right: 12px;
-      transform: translateY(-50%);
-      background-color: #d62828;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 5px 11px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      user-select: none;
-    }
-    #memoList li button:hover,
-    #memoList li button:focus {
-      background-color: #a32121;
-      outline: none;
-    }
-
-    /* 새 메모 입력창 */
     #newMemo {
-      width: 100%;
-      height: 90px;
-      border-radius: 8px;
-      padding: 12px 14px;
-      resize: vertical;
-      border: 1.5px solid #ccc;
-      font-size: 1rem;
-      transition: border-color 0.3s ease;
-      font-family: 'Noto Sans KR', sans-serif;
-    }
-    #newMemo:focus {
-      border-color: #d62828;
-      outline: none;
+      height: 70px;
+      font-size: 0.9rem;
     }
     #addMemoBtn {
-      margin-top: 15px;
-      float: right;
-      background-color: #d62828;
-      color: white;
-      border: none;
-      padding: 12px 26px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 1.1rem;
-      transition: background-color 0.3s ease;
-      user-select: none;
+      padding: 10px 20px;
+      font-size: 1rem;
     }
-    #addMemoBtn:hover,
-    #addMemoBtn:focus {
-      background-color: #a32121;
-      outline: none;
+    header h1 {
+      font-size: 1.4rem;
     }
-
-    /* 푸터 */
-    footer {
-      margin-top: 40px;
-      padding: 10px 0;
-      width: 100%;
-      max-width: 900px;
-      text-align: center;
-      font-size: 0.9rem;
-      color: #666;
-      user-select: none;
-    }
-
-    /* 반응형 */
-    @media (max-width: 600px) {
-      #calendar th, #calendar td {
-        height: 80px;
-        padding: 6px 4px;
-        font-size: 0.85rem;
-      }
-      #memoArea {
-        padding: 20px 15px;
-      }
-      #newMemo {
-        height: 70px;
-        font-size: 0.9rem;
-      }
-      #addMemoBtn {
-        padding: 10px 20px;
-        font-size: 1rem;
-      }
-      header h1 {
-        font-size: 1.4rem;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 
@@ -289,19 +234,17 @@
   <h1>두드림소방 일정관리</h1>
 </header>
 
-<div class="nav-buttons" role="navigation" aria-label="월별 이동">
-  <button type="button" onclick="prevMonth()" aria-label="이전 달 이동">◀ 이전달</button>
-  <span id="currentMonth" aria-live="polite"></span>
-  <button type="button" onclick="nextMonth()" aria-label="다음 달 이동">다음달 ▶</button>
+<div id="monthSelectContainer">
+  <select id="monthSelect" aria-label="월 선택">
+    <!-- 옵션은 JS에서 채움 -->
+  </select>
 </div>
 
-<table id="calendar" role="grid" aria-label="달력">
-  <!-- JS에서 채워짐 -->
-</table>
+<table id="calendar" role="grid" aria-label="달력"></table>
 
 <section id="memoArea" aria-live="polite">
   <h3>선택한 날짜 메모 <span id="selectedDateDisplay"></span></h3>
-  <ul id="memoList" tabindex="0"><li>날짜를 선택하세요.</li></ul>
+  <ul id="memoList"><li>날짜를 선택하세요.</li></ul>
   <textarea id="newMemo" placeholder="새 메모를 입력하세요." aria-label="새 메모 입력"></textarea>
   <button id="addMemoBtn" onclick="addMemo()">메모 추가</button>
 </section>
@@ -311,51 +254,63 @@
 </footer>
 
 <script>
-  let currentYear, currentMonth;
-  let selectedDate = null;
+  // 연도/월 범위 설정
+  const startYear = 2025;
+  const startMonth = 8; // 8월 (1~12)
+  const endYear = 2030;
+  const endMonth = 8;
+
+  // 메모 저장 객체 (키: "YYYY-M-D")
   let memos = {};
+  let selectedDate = null;
 
-  function loadMemos() {
-    const data = localStorage.getItem('calendarMemosMulti');
-    memos = data ? JSON.parse(data) : {};
+  // 오늘 날짜(연,월,일)
+  const today = new Date();
+
+  // 월 선택 박스 채우기
+  function fillMonthSelect() {
+    const monthSelect = document.getElementById('monthSelect');
+    monthSelect.innerHTML = '';
+    for(let y = startYear; y <= endYear; y++){
+      let mStart = (y === startYear) ? startMonth : 1;
+      let mEnd = (y === endYear) ? endMonth : 12;
+      for(let m = mStart; m <= mEnd; m++){
+        const option = document.createElement('option');
+        option.value = `${y}-${m}`;
+        option.textContent = `${y}년 ${m}월`;
+        monthSelect.appendChild(option);
+      }
+    }
+    // 기본 선택: 오늘 월이 범위 내면 오늘 월, 아니면 시작월
+    const defaultVal = (today.getFullYear() > startYear || (today.getFullYear() === startYear && today.getMonth()+1 >= startMonth))
+      && (today.getFullYear() < endYear || (today.getFullYear() === endYear && today.getMonth()+1 <= endMonth))
+      ? `${today.getFullYear()}-${today.getMonth()+1}`
+      : `${startYear}-${startMonth}`;
+    monthSelect.value = defaultVal;
   }
 
-  function saveMemos() {
-    localStorage.setItem('calendarMemosMulti', JSON.stringify(memos));
-  }
-
-  function shortMemo(text, maxLen=15){
-    if(text.length <= maxLen) return text;
-    return text.slice(0, maxLen) + '...';
-  }
-
+  // 달력 만들기
   function buildCalendar(year, month) {
-    currentYear = year;
-    currentMonth = month;
     selectedDate = null;
-
-    const currentMonthSpan = document.getElementById('currentMonth');
-    currentMonthSpan.textContent = `${year}년 ${month + 1}월`;
-
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const today = new Date();
+    document.getElementById('selectedDateDisplay').textContent = '';
+    document.getElementById('newMemo').value = '';
+    renderMemoList();
 
     const calendarEl = document.getElementById('calendar');
+    const firstDay = new Date(year, month-1, 1);
+    const lastDay = new Date(year, month, 0);
 
     let html = '<thead><tr><th scope="col">일</th><th scope="col">월</th><th scope="col">화</th><th scope="col">수</th><th scope="col">목</th><th scope="col">금</th><th scope="col">토</th></tr></thead><tbody><tr>';
 
-    // 빈 칸 채우기
-    for(let i=0; i < firstDay.getDay(); i++){
+    // 첫째 주 빈 칸 채우기
+    for(let i=0; i<firstDay.getDay(); i++){
       html += '<td></td>';
     }
 
     for(let day=1; day <= lastDay.getDate(); day++){
-      const dateKey = `${year}-${month + 1}-${day}`;
+      const dateKey = `${year}-${month}-${day}`;
       const hasMemo = memos[dateKey] && memos[dateKey].length > 0;
-
-      // 오늘 날짜인지 체크
-      const isToday = (year === today.getFullYear() && month === today.getMonth() && day === today.getDate());
+      const isToday = (year === today.getFullYear() && month === today.getMonth()+1 && day === today.getDate());
 
       html += `<td
         class="${hasMemo ? 'hasMemo' : ''} ${isToday ? 'today' : ''}"
@@ -365,17 +320,17 @@
         aria-label="${day}일${hasMemo ? ', 메모 있음' : ''}${isToday ? ', 오늘' : ''}"
         onkeydown="if(event.key==='Enter' || event.key===' ') selectDate(${year},${month},${day}, this)"
         style="position:relative;"
-        >`;
-
+      >`;
       html += `<div class="date-number">${day}</div>`;
 
       if(hasMemo){
         const previewMemos = memos[dateKey].slice(0, 2);
         previewMemos.forEach(memo => {
-          html += `<div class="memo-preview" title="${memo}">${shortMemo(memo)}</div>`;
+          html += `<div class="memo-preview" title="${memo}">${memo.length > 15 ? memo.slice(0,15)+'...' : memo}</div>`;
         });
         html += `<div class="memo-dot" title="메모 있음"></div>`;
       }
+
       html += '</td>';
 
       if((firstDay.getDay() + day) % 7 === 0 && day !== lastDay.getDate()){
@@ -383,7 +338,122 @@
       }
     }
 
-    // 남은 칸 빈칸 채우기
+    // 마지막 주 빈칸 채우기
     const remaining = (7 - (firstDay.getDay() + lastDay.getDate()) % 7) % 7;
     for(let i=0; i<remaining; i++){
       html += '<td></td>';
+    }
+
+    html += '</tr></tbody>';
+    calendarEl.innerHTML = html;
+  }
+
+  // 선택한 날짜 표시 및 메모 리스트 렌더링
+  function selectDate(year, month, day, tdElem) {
+    document.querySelectorAll('#calendar td').forEach(td => td.classList.remove('selected'));
+    tdElem.classList.add('selected');
+    selectedDate = `${year}-${month}-${day}`;
+    document.getElementById('selectedDateDisplay').textContent = `(${selectedDate})`;
+    renderMemoList();
+  }
+
+  // 메모 리스트 렌더링
+  function renderMemoList() {
+    const memoList = document.getElementById('memoList');
+    memoList.innerHTML = '';
+
+    if(!selectedDate) {
+      memoList.innerHTML = '<li>날짜를 선택하세요.</li>';
+      return;
+    }
+
+    const list = memos[selectedDate] || [];
+    if(list.length === 0) {
+      memoList.innerHTML = '<li>등록된 메모가 없습니다.</li>';
+      return;
+    }
+
+    list.forEach((memo, idx) => {
+      const li = document.createElement('li');
+      li.textContent = memo;
+
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '삭제';
+      delBtn.onclick = () => {
+        if(confirm('메모를 삭제하시겠습니까?')) {
+          deleteMemo(idx);
+        }
+      };
+
+      li.appendChild(delBtn);
+      memoList.appendChild(li);
+    });
+  }
+
+  // 새 메모 추가
+  function addMemo() {
+    if(!selectedDate) {
+      alert('날짜를 선택해주세요.');
+      return;
+    }
+    const newMemo = document.getElementById('newMemo');
+    const val = newMemo.value.trim();
+    if(!val) {
+      alert('메모 내용을 입력하세요.');
+      return;
+    }
+    if(!memos[selectedDate]) {
+      memos[selectedDate] = [];
+    }
+    memos[selectedDate].push(val);
+    saveMemos();
+    renderMemoList();
+    newMemo.value = '';
+  }
+
+  // 메모 삭제
+  function deleteMemo(idx) {
+    if(!selectedDate || !memos[selectedDate]) return;
+    memos[selectedDate].splice(idx, 1);
+    if(memos[selectedDate].length === 0) {
+      delete memos[selectedDate];
+    }
+    saveMemos();
+    renderMemoList();
+    buildCalendar(...selectedDate.split('-').map(Number).slice(0,2));
+  }
+
+  // 로컬스토리지 로드/저장
+  function loadMemos() {
+    const data = localStorage.getItem('calendarMemosMulti');
+    memos = data ? JSON.parse(data) : {};
+  }
+  function saveMemos() {
+    localStorage.setItem('calendarMemosMulti', JSON.stringify(memos));
+  }
+
+  // 월 선택 시 달력 업데이트
+  document.getElementById('monthSelect').addEventListener('change', e => {
+    const [y,m] = e.target.value.split('-').map(Number);
+    buildCalendar(y, m);
+    selectedDate = null;
+    document.getElementById('selectedDateDisplay').textContent = '';
+    document.getElementById('newMemo').value = '';
+    renderMemoList();
+  });
+
+  // 초기화
+  function init() {
+    loadMemos();
+    fillMonthSelect();
+
+    const select = document.getElementById('monthSelect');
+    const [y,m] = select.value.split('-').map(Number);
+    buildCalendar(y,m);
+  }
+
+  init();
+</script>
+
+</body>
+</html>
