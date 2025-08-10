@@ -1,86 +1,107 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DO DREAM, 두드림소방</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Arial', sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
-            line-height: 1.6;
-        }
-        header {
-            background-color: #d62828;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 1.8rem;
-        }
-        .banner {
-            background-color: #f77f00;
-            color: #fff;
-            padding: 15px;
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-        main {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-            text-align: center;
-        }
-        .intro {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        button {
-            background-color: #d62828;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #a61c1c;
-        }
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>두드림소방 - 메인</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+  }
+  nav {
+    width: 200px;
+    background: #d62828;
+    color: white;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  nav a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 10px 0;
+    font-weight: bold;
+  }
+  nav a:hover {
+    background: #a61c1c;
+  }
+  main {
+    flex-grow: 1;
+    padding: 20px;
+    background: #f9f9f9;
+    height: 100vh;
+    overflow-y: auto;
+    text-align: center;
+  }
+  header h1 {
+    color: #d62828;
+    margin-bottom: 10px;
+  }
+  .banner {
+    background-color: #f77f00;
+    color: #fff;
+    padding: 15px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    border-radius: 5px;
+  }
+  .intro {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin: auto;
+    max-width: 600px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  button {
+    background-color: #d62828;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  button:hover {
+    background-color: #a61c1c;
+  }
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+</style>
 </head>
 <body>
 
-    <header>
-        <h1>DO DREAM, 꿈을 실현하는 두드림소방, Make it safe</h1>
-    </header>
+<nav>
+  <h2>두드림소방</h2>
+  <a href="index.html">🏠 메인</a>
+  <a href="about.html">🏢 회사 소개</a>
+  <a href="contact.html">📞 연락처</a>
+</nav>
 
-    <div class="banner">
-        소방시설 신축·리모델링·보수공사 안전하게 책임시공
-    </div>
+<main>
+  <header>
+    <h1>DO DREAM, 꿈을 실현하는 두드림소방, Make it safe</h1>
+  </header>
 
-    <main>
-        <div class="intro">
-            <p>두드림소방은 군산을 중심으로 전북 전역에 소방설비 시공, 노후 설비 보수서비스를 제공합니다.</p>
-            <p>깔끔한 시공과 합리적인 가격으로 고객 만족을 실현합니다.</p>
-        </div>
+  <div class="banner">
+    소방시설 신축·리모델링·보수공사 안전하게 책임시공
+  </div>
 
-        <a href="tel:0507-1394-5324">
-            <button>☎ 전화 상담 : 0507-1394-5324</button>
-        </a>
-    </main>
+  <div class="intro">
+    <p>두드림소방은 군산을 중심으로 전북 전역에 소방설비 시공, 노후 설비 보수서비스를 제공합니다.</p>
+    <p>깔끔한 시공과 합리적인 가격으로 고객 만족을 실현합니다.</p>
+  </div>
+
+  <a href="tel:050713945324">
+    <button>☎ 전화 상담 : 0507-1394-5324</button>
+  </a>
+</main>
 
 </body>
 </html>
