@@ -1,681 +1,390 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>두드림소방 일정관리 (Firebase 완전판)</title>
-<meta name="description" content="두드림소방 일정관리 - Firebase 로그인/승인/중요도/시간/CSV 기능 포함" />
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>두드림소방 일정관리</title>
 <style>
-  :root{--brand:#d62828;--bg:#fafafa;--card:#fff}
-  *{box-sizing:border-box}
-  body{font-family:'Noto Sans KR',sans-serif;margin:0;background:var(--bg);color:#222;display:flex;flex-direction:column;align-items:center;padding:18px}
-  header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
-  header .left{display:flex;align-items:center;gap:12px}
-  header img{height:44px}
-  header h1{margin:0;color:var(--brand);font-size:1.3rem}
-  .auth-buttons button{margin-left:8px;background:var(--brand);color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;font-weight:700}
-  .auth-buttons button.secondary{background:#fff;color:var(--brand);border:1px solid var(--brand)}
-  #container{width:100%;max-width:1100px}
-  #monthSelect{width:100%;padding:10px;border-radius:8px;border:1.5px solid #ccc;margin-bottom:12px;font-size:1rem}
-  .layout{display:grid;grid-template-columns:1fr 380px;gap:16px}
-  table#calendar{width:100%;border-collapse:collapse;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.06);table-layout:fixed}
-  #calendar th{background:var(--brand);color:#fff;padding:10px 6px;font-weight:700}
-  #calendar td{padding:8px;border:1px solid #eee;height:140px;vertical-align:top;position:relative;cursor:pointer;overflow:hidden}
-  .date-number{font-weight:700;margin-bottom:4px}
-  .cell-memos{font-size:0.75rem;max-height:calc(140px - 38px);overflow:auto}
-  .cell-memos div{background:rgba(0,0,0,0.03);padding:4px;border-radius:4px;margin-bottom:4px;word-break:break-word;max-height:28px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .memo-dot{width:8px;height:8px;background:var(--brand);border-radius:50%;position:absolute;right:8px;bottom:8px}
-  .today{box-shadow:inset 0 0 0 3px rgba(214,40,40,0.08);border-radius:6px}
-  td.selected{border:3px solid var(--brand);background:#fff0f0}
-  #memoArea{background:var(--card);padding:18px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;flex-direction:column;max-height:580px}
-  #memoList{list-style:none;padding:0;margin:0 0 10px 0;max-height:300px;overflow:auto;border:1px solid #eee;border-radius:8px}
-  #memoList li{padding:10px 90px 10px 12px;border-bottom:1px solid #f3f3f3;position:relative;word-break:break-word;font-size:0.9rem;line-height:1.2em;}
-  #memoList li:last-child{border-bottom:none}
-  .del-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--brand);color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;font-weight:700;font-size:0.8rem}
-  textarea#newMemo{width:100%;min-height:80px;border-radius:8px;padding:10px;border:1.2px solid #ccc;font-size:1rem;resize:none}
-  #memoMeta{display:flex;gap:8px;align-items:center;margin:8px 0}
-  #timeInput, #prioritySelect{padding:6px 10px;border-radius:6px;border:1.2px solid #ccc;font-size:1rem}
-  #addMemoBtn{background:var(--brand);color:#fff;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:700;align-self:flex-end;margin-top:6px}
-  .modal{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:999;display:none}
-  .modal .card{background:#fff;padding:18px;border-radius:10px;width:400px;max-width:90%}
-  .field{margin-bottom:8px}
-  .field input, .field select{width:100%;padding:8px;border-radius:6px;border:1px solid #ccc}
-  .small{font-size:0.9rem;color:#666;margin-top:8px}
-  footer{margin-top:18px;color:#666;font-size:0.9rem}
-  #adminPanel{max-height:380px;overflow:auto}
-  table.adminTable{width:100%;border-collapse:collapse}
-  table.adminTable th, table.adminTable td{border:1px solid #ddd;padding:8px;text-align:left;font-size:0.9rem}
-  table.adminTable th{background:var(--brand);color:#fff}
-  .btnApprove, .btnReject{cursor:pointer;padding:6px 10px;border:none;border-radius:6px;color:#fff;font-weight:700;margin-right:6px}
-  .btnApprove{background:#2a9d8f}
-  .btnReject{background:#e63946}
-  #csvControls{margin-top:12px}
-  #csvControls button{margin-right:8px;background:var(--brand);color:#fff;padding:8px 12px;border:none;border-radius:6px;cursor:pointer;font-weight:700}
-  @media (max-width:980px){.layout{grid-template-columns:1fr;}.auth-buttons button{margin-left:6px}}
+  body { font-family: 'Noto Sans KR', sans-serif; margin: 20px; background:#fafafa; }
+  h1 { text-align: center; margin-bottom: 20px; }
+  #authSection { text-align: center; margin-bottom: 20px; }
+  #authSection button { margin: 0 10px; padding: 8px 16px; font-size: 1rem; cursor: pointer; }
+  #userInfo { margin-bottom: 15px; font-weight: bold; }
+  #monthSelect, textarea, button { width: 100%; margin-bottom: 10px; padding: 8px; font-size: 1rem; box-sizing: border-box; }
+  #calendar { border-collapse: collapse; width: 100%; max-width: 600px; margin: 0 auto 20px; }
+  #calendar th, #calendar td { border: 1px solid #ccc; padding: 8px; text-align: center; vertical-align: top; height: 100px; cursor: pointer; }
+  .selected { background-color: #ffe6e6; }
+  #memoList { max-width: 600px; margin: 0 auto 20px; padding-left: 0; list-style: none; }
+  #memoList li { background: #fff; margin-bottom: 8px; padding: 8px; border-radius: 4px; position: relative; }
+  .del-btn { position: absolute; right: 8px; top: 8px; background: #d62828; border: none; color: white; border-radius: 4px; cursor: pointer; padding: 4px 8px; }
+  @media (max-width: 640px) {
+    #calendar th, #calendar td { height: 80px; font-size: 0.8rem; }
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="left">
-    <img src="두드림소방로고.PNG" alt="logo" onerror="this.style.display='none'"/>
-    <h1>두드림소방 일정관리</h1>
-  </div>
-  <div class="auth-buttons" id="authButtons">
-    <!-- 동적 -->
-  </div>
-</header>
+<h1>두드림소방 일정관리</h1>
 
-<div id="container">
-  <select id="monthSelect" aria-label="월 선택"></select>
-
-  <div class="layout">
-    <div>
-      <table id="calendar" role="grid" aria-label="달력"></table>
-    </div>
-
-    <aside id="memoArea" aria-live="polite">
-      <h3>선택한 날짜 메모 <span id="selectedDateDisplay"></span></h3>
-      <ul id="memoList"><li>날짜를 선택하세요.</li></ul>
-
-      <label class="small" for="newMemo">새 메모</label>
-      <textarea id="newMemo" placeholder="예: 점검 일정, 현장 메모 등"></textarea>
-
-      <div id="memoMeta">
-        <input type="time" id="timeInput" aria-label="메모 시간" />
-        <select id="prioritySelect" aria-label="중요도 선택">
-          <option value="normal">일반</option>
-          <option value="high">중요</option>
-          <option value="low">낮음</option>
-        </select>
-      </div>
-
-      <button id="addMemoBtn">메모 추가</button>
-
-      <div id="csvControls" aria-label="CSV 관리">
-        <button id="exportCsvBtn" title="CSV 내보내기">CSV 내보내기</button>
-        <button id="importCsvBtn" title="CSV 가져오기">CSV 가져오기</button>
-        <input type="file" id="csvFileInput" accept=".csv" style="display:none"/>
-      </div>
-
-      <div class="small" id="statusLine"></div>
-
-      <div id="adminPanel" style="display:none;">
-        <h3>관리자 승인 대기</h3>
-        <table class="adminTable" aria-label="회원 승인 테이블">
-          <thead><tr><th>#</th><th>이메일</th><th>가입일</th><th>승인</th><th>거부</th></tr></thead>
-          <tbody id="adminTableBody"></tbody>
-        </table>
-      </div>
-    </aside>
-  </div>
+<div id="authSection">
+  <span id="userInfo"></span>
+  <button id="btnLogin">로그인</button>
+  <button id="btnRegister">회원가입</button>
+  <button id="btnLogout" style="display:none;">로그아웃</button>
 </div>
 
-<footer>© 2025 두드림소방 · 전화 0507-1394-5324 · dodreamfire@naver.com</footer>
+<select id="monthSelect" aria-label="월 선택"></select>
 
-<!-- Firebase SDK -->
+<table id="calendar" aria-label="달력"></table>
+
+<h3>선택 날짜 메모: <span id="selectedDateDisplay">없음</span></h3>
+<ul id="memoList"><li>날짜를 선택하세요.</li></ul>
+
+<textarea id="newMemo" placeholder="새 메모 입력"></textarea>
+<button id="addMemoBtn" disabled>메모 추가</button>
+
+<div id="statusLine" style="color:green; text-align:center; margin-top:10px;"></div>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
 <script>
-/* ====================
-  1) Firebase 설정
-==================== */
-const firebaseConfig = {
-  apiKey: "AIzaSyAaAeWf8x-TVUBcM8YuDYaJ1k3da0J7KXI",
-  authDomain: "dodreamfire.firebaseapp.com",
-  projectId: "dodreamfire",
-  storageBucket: "dodreamfire.firebasestorage.app",
-  messagingSenderId: "36503811647",
-  appId: "1:36503811647:web:4c19ffa3dcb337dfed6a8a"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-/* ====================
-  2) 관리자 이메일
-==================== */
-const adminEmails = ['dodreamfire@naver.com']; // 실제 관리자 이메일로 수정하세요
-
-/* ====================
-  3) 월 범위
-==================== */
-const startYear = 2025, startMonth = 8;
-const endYear = 2030, endMonth = 8;
-
-/* ====================
-  4) 상태 변수
-==================== */
-let currentUser = null;
-let memos = {};
-let selectedDate = null;
-
-/* ====================
-  5) DOM
-==================== */
-const monthSelect = document.getElementById('monthSelect');
-const calendar = document.getElementById('calendar');
-const memoList = document.getElementById('memoList');
-const newMemoTA = document.getElementById('newMemo');
-const addMemoBtn = document.getElementById('addMemoBtn');
-const selectedDateDisplay = document.getElementById('selectedDateDisplay');
-const statusLine = document.getElementById('statusLine');
-const authButtons = document.getElementById('authButtons');
-const timeInput = document.getElementById('timeInput');
-const prioritySelect = document.getElementById('prioritySelect');
-const adminPanel = document.getElementById('adminPanel');
-const adminTableBody = document.getElementById('adminTableBody');
-const exportCsvBtn = document.getElementById('exportCsvBtn');
-const importCsvBtn = document.getElementById('importCsvBtn');
-const csvFileInput = document.getElementById('csvFileInput');
-
-/* ====================
-  6) 유틸 - 날짜 문자열
-==================== */
-function pad(n){return n<10?'0'+n:n}
-function formatDate(y,m,d){return `${y}-${pad(m)}-${pad(d)}`}
-
-/* ====================
-  7) 달력 UI 그리기
-==================== */
-function renderCalendar(year, month) {
-  calendar.innerHTML = '';
-  const firstDay = new Date(year, month-1, 1);
-  const lastDay = new Date(year, month, 0);
-  const startDay = firstDay.getDay();
-  const daysInMonth = lastDay.getDate();
-
-  // 테이블 헤더 (일~토)
-  const daysOfWeek = ['일','월','화','수','목','금','토'];
-  let thead = document.createElement('thead');
-  let trHead = document.createElement('tr');
-  daysOfWeek.forEach(d => {
-    let th = document.createElement('th');
-    th.textContent = d;
-    trHead.appendChild(th);
-  });
-  thead.appendChild(trHead);
-  calendar.appendChild(thead);
-
-  // 테이블 바디
-  let tbody = document.createElement('tbody');
-  let row = document.createElement('tr');
-  let dayCount = 0;
-
-  // 빈칸 채우기
-  for(let i=0; i<startDay; i++){
-    let td = document.createElement('td');
-    row.appendChild(td);
-    dayCount++;
-  }
-
-  // 날짜 채우기
-  for(let d=1; d<=daysInMonth; d++){
-    if(dayCount%7 === 0){
-      tbody.appendChild(row);
-      row = document.createElement('tr');
-    }
-    let td = document.createElement('td');
-    td.setAttribute('tabindex', 0);
-    td.classList.add('calendar-cell');
-    td.dataset.date = formatDate(year, month, d);
-
-    // 날짜 표시
-    let dateNum = document.createElement('div');
-    dateNum.className = 'date-number';
-    dateNum.textContent = d;
-    td.appendChild(dateNum);
-
-    // 메모 표시 (복수개)
-    let memoContainer = document.createElement('div');
-    memoContainer.className = 'cell-memos';
-
-    const cellDateKey = formatDate(year, month, d);
-    if(memos[cellDateKey]) {
-      memos[cellDateKey].forEach(memo=>{
-        let memoDiv = document.createElement('div');
-        memoDiv.textContent = (memo.time ? memo.time + ' ' : '') + memo.text;
-        // 중요도 색상
-        if(memo.priority==='high') memoDiv.style.backgroundColor = '#f9d6d6';
-        else if(memo.priority==='low') memoDiv.style.backgroundColor = '#d6f0f9';
-        memoContainer.appendChild(memoDiv);
-      });
-    }
-    td.appendChild(memoContainer);
-
-    // 오늘 강조
-    let today = new Date();
-    if(year===today.getFullYear() && month===today.getMonth()+1 && d===today.getDate()){
-      td.classList.add('today');
-    }
-
-    td.addEventListener('click', () => {
-      selectDate(cellDateKey);
-    });
-
-    td.addEventListener('keydown', e => {
-      if(e.key==='Enter' || e.key===' ') {
-        e.preventDefault();
-        selectDate(cellDateKey);
-      }
-    });
-
-    row.appendChild(td);
-    dayCount++;
-  }
-
-  // 남은 빈칸 채우기
-  while(dayCount%7!==0){
-    let td = document.createElement('td');
-    row.appendChild(td);
-    dayCount++;
-  }
-  tbody.appendChild(row);
-  calendar.appendChild(tbody);
-}
-
-/* ====================
-  8) 월 선택 UI 채우기
-==================== */
-function fillMonthSelect(){
-  monthSelect.innerHTML = '';
-  for(let y=startYear; y<=endYear; y++){
-    let mStart = (y===startYear)? startMonth : 1;
-    let mEnd = (y===endYear)? endMonth : 12;
-    for(let m=mStart; m<=mEnd; m++){
-      let option = document.createElement('option');
-      option.value = `${y}-${pad(m)}`;
-      option.textContent = `${y}년 ${m}월`;
-      monthSelect.appendChild(option);
-    }
-  }
-}
-
-/* ====================
-  9) 선택 날짜 UI 및 메모 렌더링
-==================== */
-function selectDate(dateStr){
-  selectedDate = dateStr;
-  selectedDateDisplay.textContent = dateStr;
-  highlightSelectedDate(dateStr);
-  renderMemosForDate(dateStr);
-}
-
-/* 선택된 날짜 셀 강조 */
-function highlightSelectedDate(dateStr){
-  document.querySelectorAll('.calendar-cell').forEach(td=>{
-    td.classList.toggle('selected', td.dataset.date === dateStr);
-  });
-}
-
-/* 선택 날짜 메모 리스트 렌더링 */
-function renderMemosForDate(dateStr){
-  memoList.innerHTML = '';
-  if(!memos[dateStr] || memos[dateStr].length === 0){
-    memoList.innerHTML = '<li>메모가 없습니다.</li>';
-    return;
-  }
-  memos[dateStr].forEach((memo, idx) => {
-    let li = document.createElement('li');
-    li.textContent = `${memo.time || ''} [${memo.priority}] ${memo.text}`;
-    // 삭제 버튼
-    let delBtn = document.createElement('button');
-    delBtn.textContent = '삭제';
-    delBtn.className = 'del-btn';
-    delBtn.setAttribute('aria-label', '메모 삭제');
-    delBtn.addEventListener('click', e=>{
-      e.stopPropagation();
-      deleteMemo(dateStr, idx);
-    });
-    li.appendChild(delBtn);
-    memoList.appendChild(li);
-  });
-}
-
-/* ====================
-  10) 메모 추가 함수
-==================== */
-async function addMemo(){
-  if(!currentUser){
-    alert('로그인 후 이용하세요.');
-    return;
-  }
-  if(!selectedDate){
-    alert('날짜를 선택하세요.');
-    return;
-  }
-  const text = newMemoTA.value.trim();
-  if(!text){
-    alert('메모 내용을 입력하세요.');
-    return;
-  }
-  const time = timeInput.value;
-  const priority = prioritySelect.value;
-
-  // 새로운 메모 객체
-  const newMemo = {
-    text,
-    time,
-    priority,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    uid: currentUser.uid,
-    date: selectedDate
+  // Firebase 초기화
+  const firebaseConfig = {
+    apiKey: "AIzaSyAaAeWf8x-TVUBcM8YuDYaJ1k3da0J7KXI",
+    authDomain: "dodreamfire.firebaseapp.com",
+    projectId: "dodreamfire",
+    storageBucket: "dodreamfire.firebasestorage.app",
+    messagingSenderId: "36503811647",
+    appId: "1:36503811647:web:4c19ffa3dcb337dfed6a8a"
   };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-  try {
-    // Firestore에 저장
-    await db.collection('memos').add(newMemo);
-    newMemoTA.value = '';
-    timeInput.value = '';
-    prioritySelect.value = 'normal';
-    statusLine.textContent = '메모가 저장되었습니다.';
-    await loadMemos();
-    renderMemosForDate(selectedDate);
-  } catch(e){
-    console.error(e);
-    alert('메모 저장 중 오류가 발생했습니다.');
-  }
-}
+  // 변수 및 요소
+  const startYear = 2025, startMonth = 8;
+  const endYear = 2030, endMonth = 8;
 
-/* ====================
-  11) 메모 삭제 함수
-==================== */
-async function deleteMemo(dateStr, idx){
-  if(!currentUser) return;
-  const memoArr = memos[dateStr];
-  if(!memoArr || !memoArr[idx]) return;
-  const memo = memoArr[idx];
-  if(memo.uid !== currentUser.uid) {
-    alert('본인 메모만 삭제할 수 있습니다.');
-    return;
-  }
-  try {
-    await db.collection('memos').doc(memo.id).delete();
-    statusLine.textContent = '메모가 삭제되었습니다.';
-    await loadMemos();
-    renderMemosForDate(selectedDate);
-  } catch(e){
-    console.error(e);
-    alert('삭제 실패');
-  }
-}
+  let currentUser = null;
+  let memos = {};
+  let selectedDate = null;
 
-/* ====================
-  12) 메모 불러오기 (Firestore에서)
-==================== */
-async function loadMemos(){
-  if(!currentUser) {
-    memos = {};
-    renderCalendarDisplay();
-    renderMemosForDate(selectedDate);
-    return;
-  }
-  try {
-    const snapshot = await db.collection('memos')
-      .where('uid', '==', currentUser.uid)
-      .get();
+  const monthSelect = document.getElementById('monthSelect');
+  const calendar = document.getElementById('calendar');
+  const memoList = document.getElementById('memoList');
+  const newMemoTA = document.getElementById('newMemo');
+  const addMemoBtn = document.getElementById('addMemoBtn');
+  const selectedDateDisplay = document.getElementById('selectedDateDisplay');
+  const statusLine = document.getElementById('statusLine');
 
-    memos = {};
-    snapshot.forEach(doc=>{
-      const data = doc.data();
-      data.id = doc.id;
-      if(!memos[data.date]) memos[data.date] = [];
-      memos[data.date].push(data);
-    });
-    renderCalendarDisplay();
-    renderMemosForDate(selectedDate);
-  } catch(e){
-    console.error(e);
-  }
-}
-
-/* ====================
-  13) 캘린더 + 메모 렌더링
-==================== */
-function renderCalendarDisplay(){
-  if(!monthSelect.value) return;
-  const [y,m] = monthSelect.value.split('-').map(Number);
-  renderCalendar(y,m);
-  if(selectedDate && selectedDate.startsWith(monthSelect.value)){
-    highlightSelectedDate(selectedDate);
-  } else {
-    selectedDate = null;
-    memoList.innerHTML = '<li>날짜를 선택하세요.</li>';
-    selectedDateDisplay.textContent = '';
-  }
-}
-
-/* ====================
-  14) 로그인 상태 UI 업데이트
-==================== */
-function updateAuthUI(user){
-  currentUser = user;
-  authButtons.innerHTML = '';
-  if(user){
-    authButtons.innerHTML = `
-      <span>${user.email}</span>
-      <button id="btnLogout" class="secondary">로그아웃</button>
-    `;
-    // 관리자만 승인 대기 UI 노출
-    if(adminEmails.includes(user.email)){
-      adminPanel.style.display = 'block';
-      loadPendingUsers();
-    } else {
-      adminPanel.style.display = 'none';
-    }
-    loadMemos();
-  } else {
-    authButtons.innerHTML = `
-      <button id="btnLogin">로그인</button>
-      <button id="btnRegister">회원가입</button>
-    `;
-    adminPanel.style.display = 'none';
-    memos = {};
-    renderCalendarDisplay();
-  }
-  attachAuthHandlers();
-}
-
-/* ====================
-  15) 로그인, 회원가입, 로그아웃 핸들러 연결
-==================== */
-function attachAuthHandlers(){
+  const userInfo = document.getElementById('userInfo');
   const btnLogin = document.getElementById('btnLogin');
   const btnRegister = document.getElementById('btnRegister');
   const btnLogout = document.getElementById('btnLogout');
 
-  if(btnLogin){
-    btnLogin.onclick = async () => {
-      const email = prompt('이메일을 입력하세요');
-      if(!email) return alert('이메일 필요');
-      const password = prompt('비밀번호를 입력하세요');
-      if(!password) return alert('비밀번호 필요');
-      try {
-        await auth.signInWithEmailAndPassword(email, password);
-      } catch(e){
-        alert('로그인 실패: '+e.message);
-      }
-    };
-  }
-  if(btnRegister){
-    btnRegister.onclick = async () => {
-      const email = prompt('이메일을 입력하세요');
-      if(!email) return alert('이메일 필요');
-      const password = prompt('비밀번호를 입력하세요');
-      if(!password) return alert('비밀번호 필요');
-      try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        // 가입 즉시 승인 상태 false로 users 문서 생성
-        await db.collection('users').doc(userCredential.user.uid).set({
-          email,
-          approved: false,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert('회원가입 성공, 관리자의 승인을 기다려주세요.');
-      } catch(e){
-        alert('회원가입 실패: '+e.message);
-      }
-    };
-  }
-  if(btnLogout){
-    btnLogout.onclick = () => auth.signOut();
-  }
-}
+  // 유틸 함수
+  function pad(n){return n<10?'0'+n:n}
+  function formatDate(y,m,d){return `${y}-${pad(m)}-${pad(d)}`}
 
-/* ====================
-  16) 관리자: 승인 대기 사용자 불러오기
-==================== */
-async function loadPendingUsers(){
-  adminTableBody.innerHTML = '<tr><td colspan="5">불러오는 중...</td></tr>';
-  try {
-    const snapshot = await db.collection('users').where('approved', '==', false).get();
-    if(snapshot.empty){
-      adminTableBody.innerHTML = '<tr><td colspan="5">승인 대기 중인 회원이 없습니다.</td></tr>';
+  // 월 선택 옵션 생성
+  function fillMonthSelect(){
+    monthSelect.innerHTML = '';
+    for(let y=startYear; y<=endYear; y++){
+      let mStart = (y===startYear)? startMonth : 1;
+      let mEnd = (y===endYear)? endMonth : 12;
+      for(let m=mStart; m<=mEnd; m++){
+        let option = document.createElement('option');
+        option.value = `${y}-${pad(m)}`;
+        option.textContent = `${y}년 ${m}월`;
+        monthSelect.appendChild(option);
+      }
+    }
+  }
+
+  // 달력 그리기
+  function renderCalendar(year, month) {
+    calendar.innerHTML = '';
+    const firstDay = new Date(year, month-1, 1);
+    const lastDay = new Date(year, month, 0);
+    const startDay = firstDay.getDay();
+    const daysInMonth = lastDay.getDate();
+
+    // 헤더
+    const daysOfWeek = ['일','월','화','수','목','금','토'];
+    let thead = document.createElement('thead');
+    let trHead = document.createElement('tr');
+    daysOfWeek.forEach(d => {
+      let th = document.createElement('th');
+      th.textContent = d;
+      trHead.appendChild(th);
+    });
+    thead.appendChild(trHead);
+    calendar.appendChild(thead);
+
+    // 바디
+    let tbody = document.createElement('tbody');
+    let row = document.createElement('tr');
+    let dayCount = 0;
+
+    for(let i=0; i<startDay; i++){
+      let td = document.createElement('td');
+      row.appendChild(td);
+      dayCount++;
+    }
+
+    for(let d=1; d<=daysInMonth; d++){
+      if(dayCount%7 === 0){
+        tbody.appendChild(row);
+        row = document.createElement('tr');
+      }
+      let td = document.createElement('td');
+      td.dataset.date = formatDate(year, month, d);
+      td.style.verticalAlign = 'top';
+
+      // 날짜 숫자 표시
+      const dateNum = document.createElement('div');
+      dateNum.textContent = d;
+      dateNum.style.fontWeight = 'bold';
+      td.appendChild(dateNum);
+
+      // 메모들 표시
+      if(memos[td.dataset.date]){
+        memos[td.dataset.date].forEach(memo=>{
+          let div = document.createElement('div');
+          div.textContent = memo.text;
+          div.style.fontSize = '0.75rem';
+          div.style.backgroundColor = '#ffe6e6';
+          div.style.margin = '2px 0';
+          div.style.padding = '2px 4px';
+          div.style.borderRadius = '4px';
+          div.style.overflow = 'hidden';
+          div.style.whiteSpace = 'nowrap';
+          div.style.textOverflow = 'ellipsis';
+          td.appendChild(div);
+        });
+      }
+
+      td.addEventListener('click', () => selectDate(td.dataset.date));
+      row.appendChild(td);
+      dayCount++;
+    }
+
+    while(dayCount%7!==0){
+      let td = document.createElement('td');
+      row.appendChild(td);
+      dayCount++;
+    }
+    tbody.appendChild(row);
+    calendar.appendChild(tbody);
+  }
+
+  // 날짜 선택
+  function selectDate(dateStr){
+    selectedDate = dateStr;
+    selectedDateDisplay.textContent = dateStr;
+    highlightSelectedDate(dateStr);
+    renderMemosForDate(dateStr);
+  }
+
+  // 선택한 날짜 셀 강조
+  function highlightSelectedDate(dateStr){
+    [...document.querySelectorAll('#calendar td')].forEach(td=>{
+      td.classList.toggle('selected', td.dataset.date === dateStr);
+    });
+  }
+
+  // 선택 날짜 메모 목록 렌더링
+  function renderMemosForDate(dateStr){
+    memoList.innerHTML = '';
+    if(!memos[dateStr] || memos[dateStr].length === 0){
+      memoList.innerHTML = '<li>메모가 없습니다.</li>';
       return;
     }
-    adminTableBody.innerHTML = '';
-    let idx = 1;
-    snapshot.forEach(doc=>{
-      const data = doc.data();
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${idx++}</td>
-        <td>${data.email || 'N/A'}</td>
-        <td>${data.createdAt ? data.createdAt.toDate().toLocaleString() : 'N/A'}</td>
-        <td><button class="btnApprove">승인</button></td>
-        <td><button class="btnReject">거부</button></td>
-      `;
-      // 승인
-      tr.querySelector('.btnApprove').onclick = async () => {
-        try {
-          await db.collection('users').doc(doc.id).update({approved:true});
-          alert('승인되었습니다.');
-          loadPendingUsers();
-        } catch(e){
-          alert('승인 실패');
-        }
+    memos[dateStr].forEach((memo, idx) => {
+      let li = document.createElement('li');
+      li.textContent = memo.text;
+      let delBtn = document.createElement('button');
+      delBtn.textContent = '삭제';
+      delBtn.className = 'del-btn';
+      delBtn.onclick = (e) => {
+        e.stopPropagation();
+        deleteMemo(dateStr, idx);
       };
-      // 거부
-      tr.querySelector('.btnReject').onclick = async () => {
-        if(confirm('정말 거부하시겠습니까?')) {
-          try {
-            // 회원 삭제 및 인증도 삭제 불가 → DB만 삭제
-            await db.collection('users').doc(doc.id).delete();
-            alert('거부 처리되었습니다.');
-            loadPendingUsers();
-          } catch(e){
-            alert('거부 실패');
-          }
-        }
-      };
-      adminTableBody.appendChild(tr);
-    });
-  } catch(e){
-    adminTableBody.innerHTML = '<tr><td colspan="5">불러오기 실패</td></tr>';
-  }
-}
-
-/* ====================
-  17) CSV 내보내기
-==================== */
-function exportToCSV(){
-  if(!currentUser) return alert('로그인 후 이용하세요.');
-  let csv = '날짜,시간,중요도,메모내용\n';
-  for(const date in memos){
-    memos[date].forEach(memo=>{
-      const line = `"${memo.date}","${memo.time || ''}","${memo.priority}","${memo.text.replace(/"/g, '""')}"\n`;
-      csv += line;
+      li.appendChild(delBtn);
+      memoList.appendChild(li);
     });
   }
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = '두드림소방_일정.csv';
-  link.click();
-  statusLine.textContent = 'CSV 파일이 다운로드되었습니다.';
-}
 
-/* ====================
-  18) CSV 가져오기
-==================== */
-function importFromCSV(file){
-  if(!currentUser) return alert('로그인 후 이용하세요.');
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const text = e.target.result;
-    // CSV 파싱 (매우 단순, 쉼표 기준, "" 처리 일부)
-    const lines = text.split(/\r?\n/).filter(l => l.trim());
-    if(lines.length < 2) return alert('올바른 CSV 파일이 아닙니다.');
-
-    let count = 0;
-    for(let i=1; i<lines.length; i++){
-      const cols = lines[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
-      if(!cols || cols.length < 4) continue;
-      const [date, time, priority, memoText] = cols.map(c => c.replace(/^"|"$/g, ''));
-      if(!date || !memoText) continue;
-      try {
-        await db.collection('memos').add({
-          uid: currentUser.uid,
-          date,
-          time,
-          priority,
-          text: memoText,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        count++;
-      } catch(e){
-        console.error(e);
-      }
+  // 메모 추가
+  async function addMemo(){
+    if(!currentUser){
+      alert('로그인 후 이용해주세요.');
+      return;
     }
-    alert(`${count}개의 메모가 추가되었습니다.`);
-    await loadMemos();
-  };
-  reader.readAsText(file);
-}
-
-/* ====================
-  19) 초기화 및 이벤트 바인딩
-==================== */
-fillMonthSelect();
-monthSelect.onchange = () => {
-  renderCalendarDisplay();
-};
-addMemoBtn.onclick = addMemo;
-exportCsvBtn.onclick = exportToCSV;
-importCsvBtn.onclick = () => csvFileInput.click();
-csvFileInput.onchange = e => {
-  if(e.target.files.length){
-    importFromCSV(e.target.files[0]);
-    e.target.value = '';
+    if(!selectedDate){
+      alert('날짜를 선택해주세요.');
+      return;
+    }
+    const text = newMemoTA.value.trim();
+    if(!text){
+      alert('메모 내용을 입력해주세요.');
+      return;
+    }
+    try {
+      await db.collection('memos').add({
+        uid: currentUser.uid,
+        date: selectedDate,
+        text: text,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      newMemoTA.value = '';
+      statusLine.textContent = '메모가 저장되었습니다.';
+      await loadMemos();
+      renderMemosForDate(selectedDate);
+    } catch(e){
+      console.error(e);
+      alert('메모 저장 중 오류가 발생했습니다.');
+    }
   }
-};
 
-/* ====================
-  20) Firebase Auth 상태 감지
-==================== */
-auth.onAuthStateChanged(user => {
-  updateAuthUI(user);
-});
+  // 메모 삭제
+  async function deleteMemo(dateStr, idx){
+    if(!currentUser) return;
+    const memoArr = memos[dateStr];
+    if(!memoArr || !memoArr[idx]) return;
+    const memo = memoArr[idx];
+    if(memo.uid !== currentUser.uid) {
+      alert('본인 메모만 삭제할 수 있습니다.');
+      return;
+    }
+    try {
+      await db.collection('memos').doc(memo.id).delete();
+      statusLine.textContent = '메모가 삭제되었습니다.';
+      await loadMemos();
+      renderMemosForDate(selectedDate);
+    } catch(e){
+      console.error(e);
+      alert('삭제 실패');
+    }
+  }
 
-/* ====================
-  21) 초기 월 설정
-==================== */
-monthSelect.value = `${startYear}-${pad(startMonth)}`;
-renderCalendarDisplay();
+  // 모든 메모 불러오기 (로그인 사용자 기준)
+  async function loadMemos(){
+    if(!currentUser){
+      memos = {};
+      renderCalendarDisplay();
+      renderMemosForDate(selectedDate);
+      return;
+    }
+    try {
+      const snapshot = await db.collection('memos')
+        .where('uid', '==', currentUser.uid)
+        .get();
 
-/* ====================
-  22) 선택 날짜 기본 선택 (오늘 또는 첫날)
-==================== */
-const todayStr = formatDate(new Date().getFullYear(), new Date().getMonth()+1, new Date().getDate());
-selectDate(todayStr);
+      memos = {};
+      snapshot.forEach(doc=>{
+        const data = doc.data();
+        data.id = doc.id;
+        if(!memos[data.date]) memos[data.date] = [];
+        memos[data.date].push(data);
+      });
+      renderCalendarDisplay();
+      if(selectedDate) renderMemosForDate(selectedDate);
+    } catch(e){
+      console.error(e);
+    }
+  }
 
-/* ====================
-  23) 도움말 & 안내 문구
-==================== */
-statusLine.textContent = '로그인 후 메모 작성 및 관리가 가능합니다.';
+  // 달력 다시 그리기
+  function renderCalendarDisplay(){
+    if(!monthSelect.value) return;
+    const [y,m] = monthSelect.value.split('-').map(Number);
+    renderCalendar(y,m);
+    if(selectedDate && selectedDate.startsWith(monthSelect.value)){
+      highlightSelectedDate(selectedDate);
+    } else {
+      selectedDate = null;
+      memoList.innerHTML = '<li>날짜를 선택하세요.</li>';
+      selectedDateDisplay.textContent = '없음';
+    }
+  }
+
+  // 인증 상태 UI 갱신
+  function updateAuthUI(user){
+    currentUser = user;
+    if(user){
+      userInfo.textContent = `${user.email}님 환영합니다.`;
+      btnLogin.style.display = 'none';
+      btnRegister.style.display = 'none';
+      btnLogout.style.display = 'inline-block';
+      addMemoBtn.disabled = false;
+      loadMemos();
+    } else {
+      userInfo.textContent = '로그인 해주세요.';
+      btnLogin.style.display = 'inline-block';
+      btnRegister.style.display = 'inline-block';
+      btnLogout.style.display = 'none';
+      addMemoBtn.disabled = true;
+      memos = {};
+      renderCalendarDisplay();
+      memoList.innerHTML = '<li>날짜를 선택하세요.</li>';
+      selectedDateDisplay.textContent = '없음';
+      statusLine.textContent = '';
+    }
+  }
+
+  // 이벤트 핸들러 연결
+  btnLogin.onclick = async () => {
+    const email = prompt('이메일 입력');
+    if(!email) return alert('이메일이 필요합니다.');
+    const password = prompt('비밀번호 입력');
+    if(!password) return alert('비밀번호가 필요합니다.');
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+      statusLine.textContent = '로그인 성공!';
+    } catch(e) {
+      alert('로그인 실패: ' + e.message);
+    }
+  };
+
+  btnRegister.onclick = async () => {
+    const email = prompt('회원가입용 이메일 입력');
+    if(!email) return alert('이메일이 필요합니다.');
+    const password = prompt('비밀번호 입력 (6자 이상)');
+    if(!password || password.length < 6) return alert('6자 이상의 비밀번호가 필요합니다.');
+    try {
+      await auth.createUserWithEmailAndPassword(email, password);
+      statusLine.textContent = '회원가입 및 로그인 성공!';
+    } catch(e) {
+      alert('회원가입 실패: ' + e.message);
+    }
+  };
+
+  btnLogout.onclick = async () => {
+    try {
+      await auth.signOut();
+      statusLine.textContent = '로그아웃 되었습니다.';
+    } catch(e) {
+      alert('로그아웃 실패: ' + e.message);
+    }
+  };
+
+  monthSelect.onchange = () => {
+    renderCalendarDisplay();
+  };
+
+  addMemoBtn.onclick = addMemo;
+
+  // 초기 실행
+  fillMonthSelect();
+  monthSelect.value = `${startYear}-${pad(startMonth)}`;
+  renderCalendarDisplay();
+
+  auth.onAuthStateChanged(user => {
+    updateAuthUI(user);
+  });
 </script>
 
 </body>
