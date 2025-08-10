@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <title>두드림소방 - 꿈을 실현하는 안전 파트너</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
 <style>
@@ -29,6 +29,7 @@
     padding: 30px 20px;
     display: flex;
     flex-direction: column;
+    z-index: 100;
   }
   nav h2 {
     margin: 0 0 30px 0;
@@ -56,11 +57,13 @@
     width: calc(100% - 220px);
     overflow-y: scroll;
     scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
   }
   section {
     scroll-snap-align: start;
     min-height: 100vh;
     padding: 40px 60px;
+    box-sizing: border-box;
   }
 
   /* 헤더 */
@@ -73,6 +76,7 @@
     font-size: 1.8rem;
     font-weight: 700;
     z-index: 10;
+    user-select: none;
   }
 
   /* 배너 */
@@ -178,36 +182,78 @@
     background-color: #a61c1c;
   }
 
-  /* 반응형 */
+  /* 모바일 최적화 */
   @media (max-width: 768px) {
-    body {
-      flex-direction: column;
+    body, html {
+      height: auto;
+      overflow: visible;
+      display: block;
     }
     nav {
+      position: relative;
       width: 100%;
       height: auto;
+      padding: 10px 5px;
       flex-direction: row;
-      padding: 10px;
       overflow-x: auto;
+      white-space: nowrap;
+      box-sizing: border-box;
     }
     nav h2 {
       margin: 0 20px 0 0;
+      font-size: 1.2rem;
+      flex-shrink: 0;
     }
     nav a {
       padding: 10px 15px;
       margin: 0 10px 0 0;
+      font-size: 0.9rem;
       white-space: nowrap;
+      flex-shrink: 0;
+    }
+    nav a.active {
+      background-color: #a61c1c;
     }
     main {
       margin-left: 0;
-      height: auto;
       width: 100%;
+      height: auto;
       overflow-y: visible;
       scroll-snap-type: none;
+      padding-bottom: 40px;
     }
     section {
       min-height: auto;
       padding: 20px 15px;
+    }
+    header {
+      padding: 15px 15px;
+      font-size: 1.4rem;
+    }
+    .banner {
+      font-size: 1rem;
+      padding: 15px 10px;
+      margin-bottom: 20px;
+    }
+    .intro p, .strengths li, .contact p {
+      font-size: 1rem;
+    }
+    .map {
+      height: 250px;
+      max-width: 100%;
+      margin: 15px auto;
+    }
+    form {
+      padding: 0 10px;
+    }
+    input, textarea {
+      font-size: 1rem;
+    }
+    button.submit-btn {
+      width: 100%;
+      font-size: 1rem;
+      padding: 12px;
+      align-self: stretch;
     }
   }
 </style>
