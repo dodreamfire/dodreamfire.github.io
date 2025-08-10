@@ -1,473 +1,389 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<title>두드림소방 - 꿈을 실현하는 안전 파트너</title>
-<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
-<style>
-  /* 기본 스타일 */
-  * {
-    box-sizing: border-box;
-  }
-  body, html {
-    margin: 0; padding: 0;
-    font-family: 'Nanum Gothic', sans-serif;
-    height: 100vh;
-    display: flex;
-    overflow: hidden;
-  }
-
-  /* 좌측 네비게이션 */
-  nav {
-    position: fixed;
-    top: 0; left: 0;
-    width: 220px;
-    height: 100vh;
-    background-color: #d62828;
-    color: white;
-    padding: 30px 20px;
-    display: flex;
-    flex-direction: column;
-    z-index: 100;
-  }
-  nav .nav-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 30px;
-  }
-  nav .nav-header .logo {
-    width: 40px; /* 필요시 크기 조절 */
-    height: auto;
-    margin-right: 10px;
-    user-select: none;
-  }
-  nav h2 {
-    margin: 0;
-    font-weight: 700;
-    font-size: 1.5rem;
-    user-select: none;
-  }
-  nav a {
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 12px 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    transition: background 0.3s;
-  }
-  nav a:hover, nav a.active {
-    background-color: #a61c1c;
-  }
-
-  /* 메인 콘텐츠 */
-  main {
-    margin-left: 220px;
-    height: 100vh;
-    width: calc(100% - 220px);
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory;
-    scroll-behavior: smooth;
-  }
-  section {
-    scroll-snap-align: start;
-    min-height: 100vh;
-    padding: 40px 60px;
-    box-sizing: border-box;
-  }
-
-  /* 헤더 */
-  header {
-    background-color: #d62828;
-    color: white;
-    padding: 20px 60px;
-    position: sticky;
-    top: 0;
-    font-size: 1.8rem;
-    font-weight: 700;
-    z-index: 10;
-    user-select: none;
-  }
-
-  /* 배너 */
-  .banner {
-    background: #f77f00;
-    color: white;
-    font-weight: 700;
-    font-size: 1.3rem;
-    text-align: center;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 40px;
-  }
-
-  /* 소개 */
-  .intro p {
-    max-width: 700px;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin: 15px auto;
-    color: #333;
-  }
-
-  /* 강점 */
-  .strengths ul {
-    list-style: none;
-    max-width: 700px;
-    margin: auto;
-    padding: 0;
-  }
-  .strengths li {
-    background: #ffe6cc;
-    margin: 10px 0;
-    padding: 15px 20px;
-    border-radius: 6px;
-    font-weight: 600;
-    color: #d86e07;
-    box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
-  }
-
-  /* 연락처 */
-  .contact p {
-    font-size: 1.1rem;
-    max-width: 700px;
-    margin: 10px auto;
-  }
-  .contact a {
-    color: #d62828;
-    font-weight: 700;
-    text-decoration: none;
-  }
-  .contact a:hover {
-    text-decoration: underline;
-  }
-
-  /* 지도 임베드 */
-  .map {
-    max-width: 700px;
-    height: 400px;
-    margin: 20px auto;
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  iframe {
-    width: 100%;
-    height: 100%;
-    border: 0;
-  }
-
-  /* 문의하기 폼 */
-  form {
-    max-width: 700px;
-    margin: 40px auto 0;
-    display: flex;
-    flex-direction: column;
-  }
-  label {
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #555;
-  }
-  input, textarea {
-    margin-bottom: 20px;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-    resize: vertical;
-  }
-  button.submit-btn {
-    width: 150px;
-    align-self: flex-start;
-    background-color: #d62828;
-    border: none;
-    color: white;
-    padding: 12px;
-    font-weight: 700;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  button.submit-btn:hover {
-    background-color: #a61c1c;
-  }
-
-  /* 캘린더 스타일 */
-  #schedule {
-    max-width: 700px;
-    margin: auto;
-  }
-  #schedule h1 {
-    text-align: center;
-    margin-bottom: 15px;
-  }
-  #schedule > div {
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  #calendar table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-  }
-  #calendar th, #calendar td {
-    border: 1px solid #ccc;
-    padding: 10px 0;
-    cursor: pointer;
-  }
-  #calendar td:hover {
-    background-color: #ffe0b3;
-  }
-  #calendar td.selected {
-    background-color: #f77f00;
-    color: white;
-  }
-  #calendar td.hasMemo {
-    background-color: #f7c59f;
-  }
-  #memo {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    resize: vertical;
-  }
-  #schedule button {
-    margin-top: 10px;
-    background-color: #d62828;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 700;
-  }
-  #schedule button:hover {
-    background-color: #a61c1c;
-  }
-
-  /* 모바일 최적화 */
-  @media (max-width: 768px) {
-    body, html {
-      height: auto;
-      overflow: visible;
-      display: block;
-    }
-    nav {
-      position: relative;
-      width: 100%;
-      height: auto;
-      padding: 10px 5px;
-      flex-direction: row;
-      overflow-x: auto;
-      white-space: nowrap;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>두드림소방 | 일정관리</title>
+  <meta name="description" content="두드림소방의 전문 일정관리 페이지입니다. 안전한 소방시설 시공과 관리를 위한 체계적인 일정관리를 지원합니다." />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset & 기본 스타일 */
+    * {
       box-sizing: border-box;
     }
-    nav .nav-header {
-      margin-bottom: 0;
-      margin-right: 20px;
-    }
-    nav h2 {
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
-    nav .logo {
-      width: 30px;
-      margin-right: 8px;
-    }
-    nav a {
-      padding: 10px 15px;
-      margin: 0 10px 0 0;
-      font-size: 0.9rem;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    nav a.active {
-      background-color: #a61c1c;
-    }
-    main {
-      margin-left: 0;
-      width: 100%;
-      height: auto;
-      overflow-y: visible;
-      scroll-snap-type: none;
-      padding-bottom: 40px;
-    }
-    section {
-      min-height: auto;
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #fefefe;
+      color: #333;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
       padding: 20px 15px;
     }
+
+    /* 상단 헤더 - 로고 + 회사명 */
     header {
-      padding: 15px 15px;
-      font-size: 1.4rem;
-    }
-    .banner {
-      font-size: 1rem;
-      padding: 15px 10px;
-      margin-bottom: 20px;
-    }
-    .intro p, .strengths li, .contact p {
-      font-size: 1rem;
-    }
-    .map {
-      height: 300px;
-      max-width: 100%;
-      margin: 15px auto;
-    }
-    form {
-      padding: 0 10px;
-    }
-    input, textarea {
-      font-size: 1rem;
-    }
-    button.submit-btn {
       width: 100%;
-      font-size: 1rem;
-      padding: 12px;
-      align-self: stretch;
+      max-width: 900px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 30px;
     }
-  }
-</style>
+    header img {
+      height: 50px;
+      width: auto;
+    }
+    header h1 {
+      font-size: 1.8rem;
+      color: #d62828;
+      margin: 0;
+      user-select: none;
+    }
+
+    /* 네비게이션 (월 이동 버튼 + 현재 월) */
+    .nav-buttons {
+      width: 100%;
+      max-width: 900px;
+      text-align: center;
+      margin-bottom: 15px;
+      user-select: none;
+    }
+    .nav-buttons button {
+      background-color: #d62828;
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 10px 18px;
+      margin: 0 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+    .nav-buttons button:hover,
+    .nav-buttons button:focus {
+      background-color: #a32121;
+      outline: none;
+    }
+    #currentMonth {
+      font-weight: 700;
+      font-size: 1.3rem;
+      vertical-align: middle;
+      user-select: text;
+    }
+
+    /* 달력 스타일 */
+    table#calendar {
+      width: 100%;
+      max-width: 900px;
+      border-collapse: collapse;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+      border-radius: 10px;
+      overflow: hidden;
+      background-color: white;
+      user-select: none;
+    }
+    #calendar th, #calendar td {
+      border: 1px solid #ddd;
+      text-align: center;
+      vertical-align: top;
+      padding: 10px 6px;
+      height: 110px;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.25s ease;
+      word-break: break-word;
+    }
+    #calendar th {
+      background-color: #d62828;
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      user-select: none;
+    }
+    #calendar td:hover {
+      background-color: #ffe5e0;
+    }
+    #calendar td.selected {
+      border: 3px solid #d62828;
+      background-color: #fff0f0;
+    }
+    /* 오늘 날짜 강조 */
+    #calendar td.today {
+      box-shadow: inset 0 0 10px 2px #d62828aa;
+    }
+    /* 날짜 숫자 */
+    .date-number {
+      font-weight: 700;
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+      user-select: text;
+    }
+    /* 메모 미리보기 */
+    .memo-preview {
+      font-size: 0.8rem;
+      color: #555;
+      line-height: 1.15em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-bottom: 4px;
+      user-select: text;
+    }
+    /* 메모 점 표시 */
+    .memo-dot {
+      width: 9px;
+      height: 9px;
+      background: #d62828;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+    }
+
+    /* 메모 영역 */
+    #memoArea {
+      width: 100%;
+      max-width: 900px;
+      background: white;
+      margin-top: 25px;
+      border-radius: 10px;
+      padding: 25px 30px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      user-select: text;
+    }
+    #memoArea h3 {
+      margin-top: 0;
+      color: #d62828;
+      font-weight: 700;
+      font-size: 1.4rem;
+      margin-bottom: 18px;
+    }
+    #selectedDateDisplay {
+      font-weight: 700;
+      color: #d62828;
+      font-size: 1.2rem;
+      user-select: text;
+    }
+    #memoList {
+      list-style: none;
+      padding-left: 0;
+      max-height: 220px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    #memoList li {
+      padding: 10px 48px 10px 15px;
+      border-bottom: 1px solid #eee;
+      position: relative;
+      word-break: break-word;
+      font-size: 1rem;
+    }
+    #memoList li:last-child {
+      border-bottom: none;
+    }
+    #memoList li button {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      background-color: #d62828;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    #memoList li button:hover,
+    #memoList li button:focus {
+      background-color: #a32121;
+      outline: none;
+    }
+
+    /* 새 메모 입력창 */
+    #newMemo {
+      width: 100%;
+      height: 90px;
+      border-radius: 8px;
+      padding: 12px 14px;
+      resize: vertical;
+      border: 1.5px solid #ccc;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    #newMemo:focus {
+      border-color: #d62828;
+      outline: none;
+    }
+    #addMemoBtn {
+      margin-top: 15px;
+      float: right;
+      background-color: #d62828;
+      color: white;
+      border: none;
+      padding: 12px 26px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.1rem;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    #addMemoBtn:hover,
+    #addMemoBtn:focus {
+      background-color: #a32121;
+      outline: none;
+    }
+
+    /* 푸터 */
+    footer {
+      margin-top: 40px;
+      padding: 10px 0;
+      width: 100%;
+      max-width: 900px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+      user-select: none;
+    }
+
+    /* 반응형 */
+    @media (max-width: 600px) {
+      #calendar th, #calendar td {
+        height: 80px;
+        padding: 6px 4px;
+        font-size: 0.85rem;
+      }
+      #memoArea {
+        padding: 20px 15px;
+      }
+      #newMemo {
+        height: 70px;
+        font-size: 0.9rem;
+      }
+      #addMemoBtn {
+        padding: 10px 20px;
+        font-size: 1rem;
+      }
+      header h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<nav>
-  <div class="nav-header">
-    <img src="두드림소방로고.PNG" alt="두드림소방 로고" class="logo" />
-    <h2>두드림소방</h2>
-  </div>
-  <a href="#home" class="active">🏠 메인</a>
-  <a href="#about">🏢 회사 소개</a>
-  <a href="#contact">📞 연락처</a>
-  <a href="#inquiry">✉️ 문의하기</a>
-  <a href="#schedule">📅 일정 관리</a>
-</nav>
+<header>
+  <img src="두드림소방로고.PNG" alt="두드림소방 로고" />
+  <h1>두드림소방 일정관리</h1>
+</header>
 
-<main>
-  <section id="home">
-    <header>DO DREAM, 꿈을 실현하는 두드림소방, Make it safe</header>
-    <div class="banner">소방시설 신축·리모델링·보수공사 안전하게 책임시공</div>
-    <div class="intro">
-      <p>두드림소방은 군산을 중심으로 전북 전역에 소방설비 시공, 노후 설비 보수서비스를 제공합니다.</p>
-      <p>깔끔한 시공과 합리적인 가격으로 고객 만족을 실현합니다.</p>
-    </div>
-  </section>
+<div class="nav-buttons" role="navigation" aria-label="월별 이동">
+  <button type="button" onclick="prevMonth()" aria-label="이전 달 이동">◀ 이전달</button>
+  <span id="currentMonth" aria-live="polite"></span>
+  <button type="button" onclick="nextMonth()" aria-label="다음 달 이동">다음달 ▶</button>
+</div>
 
-  <section id="about">
-    <h1>🏢 회사 소개</h1>
-    <p><strong>회사명:</strong> 두드림소방</p>
-    <p><strong>비전:</strong> “안전한 공간을 만드는 것이 우리의 사명입니다.”</p>
-    <h3>강점:</h3>
-    <div class="strengths">
-      <ul>
-        <li>전문 시공팀</li>
-        <li>합리적이고 투명한 견적</li>
-        <li>군산·전주·익산 등 전 지역 신속 출동</li>
-        <li>마감 품질에 대한 자신감</li>
-      </ul>
-    </div>
-  </section>
+<table id="calendar" role="grid" aria-label="달력">
+  <!-- JS에서 채워짐 -->
+</table>
 
-  <section id="contact">
-    <h1>📞 연락처</h1>
-    <div class="contact">
-      <p><strong>전화:</strong> <a href="tel:050713945324">0507-1394-5324</a></p>
-      <p><strong>이메일:</strong> <a href="mailto:dodreamfire@naver.com">dodreamfire@naver.com</a></p>
-      <p><strong>주소:</strong> 전북특별자치도 군산시 문화1길 62</p>
-      <p><strong>지도:</strong></p>
-      <div class="map">
-        <!-- 네이버 지도 대신 구글 지도 임베드 (API키 없이 퍼가기 가능) -->
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3233.371352716129!2d126.72760781526197!3d35.974086080349404!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357b5a09c6d94dd1%3A0x1ac7644c8c0d3aa9!2z7Iqk7ZWc7J20IO2CrOuhnCDsnpDsnYQg7J247IucIOy7nOq1rCDqs7zsnZDtmLjsnZw!5e0!3m2!1sko!2skr!4v1691676958427!5m2!1sko!2skr"
-          allowfullscreen=""
-          loading="lazy"
-          title="두드림소방 위치"
-        ></iframe>
-      </div>
-    </div>
-  </section>
+<section id="memoArea" aria-live="polite">
+  <h3>선택한 날짜 메모 <span id="selectedDateDisplay"></span></h3>
+  <ul id="memoList" tabindex="0"><li>날짜를 선택하세요.</li></ul>
+  <textarea id="newMemo" placeholder="새 메모를 입력하세요." aria-label="새 메모 입력"></textarea>
+  <button id="addMemoBtn" onclick="addMemo()">메모 추가</button>
+</section>
 
-  <section id="inquiry">
-    <h1>✉️ 문의하기</h1>
-    <form action="mailto:dodreamfire@naver.com" method="post" enctype="text/plain">
-      <label for="name">이름</label>
-      <input type="text" id="name" name="name" required placeholder="이름을 입력하세요" />
-
-      <label for="email">이메일</label>
-      <input type="email" id="email" name="email" required placeholder="이메일을 입력하세요" />
-
-      <label for="message">문의 내용</label>
-      <textarea id="message" name="message" rows="6" required placeholder="문의 내용을 입력하세요"></textarea>
-
-      <button type="submit" class="submit-btn">전송하기</button>
-    </form>
-  </section>
-
-  <section id="schedule">
-    <h1>📅 일정 관리</h1>
-    <div>
-      <button onclick="prevMonth()">◀ 이전달</button>
-      <span id="currentMonth" style="font-weight:bold; margin: 0 15px;"></span>
-      <button onclick="nextMonth()">다음달 ▶</button>
-    </div>
-    <div id="calendar"></div>
-    <textarea id="memo" placeholder="선택한 날짜 메모를 입력하세요" rows="5"></textarea>
-    <button onclick="saveMemo()">메모 저장</button>
-  </section>
-</main>
+<footer>
+  © 2025 두드림소방 | 전화: 0507-1394-5324 | 이메일: dodreamfire@naver.com
+</footer>
 
 <script>
-  // 네비게이션 클릭 시 부드럽게 스크롤 이동
-  document.querySelectorAll('nav a').forEach(link => {
-    link.addEventListener('click', e => {
-      e.preventDefault();
-      document.querySelectorAll('nav a').forEach(el => el.classList.remove('active'));
-      link.classList.add('active');
-      const target = document.querySelector(link.getAttribute('href'));
-      target.scrollIntoView({ behavior: 'smooth' });
-    });
-  });
-
-  // 스크롤 위치에 따라 네비게이션 활성화 변경
-  window.addEventListener('scroll', () => {
-    const sections = document.querySelectorAll('main section');
-    let scrollPos = window.scrollY || document.documentElement.scrollTop;
-
-    sections.forEach(section => {
-      if (
-        scrollPos >= section.offsetTop - 100 &&
-        scrollPos < section.offsetTop + section.offsetHeight - 100
-      ) {
-        document.querySelectorAll('nav a').forEach(link => {
-          link.classList.remove('active');
-          if (link.getAttribute('href') === '#' + section.id) {
-            link.classList.add('active');
-          }
-        });
-      }
-    });
-  });
-
-  // 일정관리 캘린더 스크립트 시작
   let currentYear, currentMonth;
   let selectedDate = null;
   let memos = {};
 
   function loadMemos() {
-    const data = localStorage.getItem('calendarMemos');
+    const data = localStorage.getItem('calendarMemosMulti');
     memos = data ? JSON.parse(data) : {};
   }
 
   function saveMemos() {
-    localStorage.setItem('calendarMemos', JSON.stringify(memos));
+    localStorage.setItem('calendarMemosMulti', JSON.stringify(memos));
+  }
+
+  function shortMemo(text, maxLen=15){
+    if(text.length <= maxLen) return text;
+    return text.slice(0, maxLen) + '...';
   }
 
   function buildCalendar(year, month) {
     currentYear = year;
     currentMonth = month;
+    selectedDate = null;
 
     const currentMonthSpan = document.getElementById('currentMonth');
-    currentMonthSpan.textContent = `${year}년 ${
+    currentMonthSpan.textContent = `${year}년 ${month + 1}월`;
+
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const today = new Date();
+
+    const calendarEl = document.getElementById('calendar');
+
+    let html = '<thead><tr><th scope="col">일</th><th scope="col">월</th><th scope="col">화</th><th scope="col">수</th><th scope="col">목</th><th scope="col">금</th><th scope="col">토</th></tr></thead><tbody><tr>';
+
+    // 빈 칸 채우기
+    for(let i=0; i < firstDay.getDay(); i++){
+      html += '<td></td>';
+    }
+
+    for(let day=1; day <= lastDay.getDate(); day++){
+      const dateKey = `${year}-${month + 1}-${day}`;
+      const hasMemo = memos[dateKey] && memos[dateKey].length > 0;
+
+      // 오늘 날짜인지 체크
+      const isToday = (year === today.getFullYear() && month === today.getMonth() && day === today.getDate());
+
+      html += `<td
+        class="${hasMemo ? 'hasMemo' : ''} ${isToday ? 'today' : ''}"
+        onclick="selectDate(${year},${month},${day}, this)"
+        tabindex="0"
+        role="gridcell"
+        aria-label="${day}일${hasMemo ? ', 메모 있음' : ''}${isToday ? ', 오늘' : ''}"
+        onkeydown="if(event.key==='Enter' || event.key===' ') selectDate(${year},${month},${day}, this)"
+        style="position:relative;"
+        >`;
+
+      html += `<div class="date-number">${day}</div>`;
+
+      if(hasMemo){
+        const previewMemos = memos[dateKey].slice(0, 2);
+        previewMemos.forEach(memo => {
+          html += `<div class="memo-preview" title="${memo}">${shortMemo(memo)}</div>`;
+        });
+        html += `<div class="memo-dot" title="메모 있음"></div>`;
+      }
+      html += '</td>';
+
+      if((firstDay.getDay() + day) % 7 === 0 && day !== lastDay.getDate()){
+        html += '</tr><tr>';
+      }
+    }
+
+    // 남은 칸 빈칸 채우기
+    const remaining = (7 - (firstDay.getDay() + lastDay.getDate()) % 7) % 7;
+    for(let i=0; i<remaining; i++){
+      html += '<td></td>';
