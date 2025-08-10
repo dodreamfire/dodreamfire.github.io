@@ -134,29 +134,29 @@
     background: white;
   }
   #memoList li {
-    padding: 10px 40px 10px 12px;
-    border-bottom: 1px solid #eee;
-    position: relative;
-    font-size: 0.95rem;
-  }
-  #memoList li:last-child {
-    border-bottom: none;
-  }
-  #memoList button.del-btn {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #d62828;
-    border: none;
-    color: white;
-    font-weight: 700;
-    font-size: 0.75rem;
-    padding: 2px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    line-height: 1;
-  }
+  padding: 10px 40px 10px 12px;
+  border-bottom: 1px solid #eee;
+  position: relative;  /* 이 부분 꼭 추가 */
+  font-size: 0.95rem;
+}
+
+#memoList button.del-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #d62828;
+  border: none;
+  color: white;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 1;
+  white-space: nowrap; /* 버튼이 줄 바꿈 안되도록 */
+}
+
   #memoList button.del-btn:hover {
     background: #a82020;
   }
