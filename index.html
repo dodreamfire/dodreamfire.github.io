@@ -31,8 +31,19 @@
     flex-direction: column;
     z-index: 100;
   }
+  nav .nav-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  nav .nav-header .logo {
+    width: 40px; /* 필요시 크기 조절 */
+    height: auto;
+    margin-right: 10px;
+    user-select: none;
+  }
   nav h2 {
-    margin: 0 0 30px 0;
+    margin: 0;
     font-weight: 700;
     font-size: 1.5rem;
     user-select: none;
@@ -199,10 +210,17 @@
       white-space: nowrap;
       box-sizing: border-box;
     }
+    nav .nav-header {
+      margin-bottom: 0;
+      margin-right: 20px;
+    }
     nav h2 {
-      margin: 0 20px 0 0;
       font-size: 1.2rem;
       flex-shrink: 0;
+    }
+    nav .logo {
+      width: 30px;
+      margin-right: 8px;
     }
     nav a {
       padding: 10px 15px;
@@ -261,7 +279,10 @@
 <body>
 
 <nav>
-  <h2>두드림소방</h2>
+  <div class="nav-header">
+    <img src="두드림소방로고.PNG" alt="두드림소방 로고" class="logo" />
+    <h2>두드림소방</h2>
+  </div>
   <a href="#home" class="active">🏠 메인</a>
   <a href="#about">🏢 회사 소개</a>
   <a href="#contact">📞 연락처</a>
