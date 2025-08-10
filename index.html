@@ -193,6 +193,62 @@
     background-color: #a61c1c;
   }
 
+  /* 캘린더 스타일 */
+  #schedule {
+    max-width: 700px;
+    margin: auto;
+  }
+  #schedule h1 {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  #schedule > div {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  #calendar table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+  }
+  #calendar th, #calendar td {
+    border: 1px solid #ccc;
+    padding: 10px 0;
+    cursor: pointer;
+  }
+  #calendar td:hover {
+    background-color: #ffe0b3;
+  }
+  #calendar td.selected {
+    background-color: #f77f00;
+    color: white;
+  }
+  #calendar td.hasMemo {
+    background-color: #f7c59f;
+  }
+  #memo {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    resize: vertical;
+  }
+  #schedule button {
+    margin-top: 10px;
+    background-color: #d62828;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  #schedule button:hover {
+    background-color: #a61c1c;
+  }
+
   /* 모바일 최적화 */
   @media (max-width: 768px) {
     body, html {
@@ -287,6 +343,7 @@
   <a href="#about">🏢 회사 소개</a>
   <a href="#contact">📞 연락처</a>
   <a href="#inquiry">✉️ 문의하기</a>
+  <a href="#schedule">📅 일정 관리</a>
 </nav>
 
 <main>
@@ -322,11 +379,12 @@
       <p><strong>주소:</strong> 전북특별자치도 군산시 문화1길 62</p>
       <p><strong>지도:</strong></p>
       <div class="map">
+        <!-- 네이버 지도 대신 구글 지도 임베드 (API키 없이 퍼가기 가능) -->
         <iframe
-          src="https://m.map.naver.com/search2/search.naver?query=두드림소방"
-          allowfullscreen
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3233.371352716129!2d126.72760781526197!3d35.974086080349404!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357b5a09c6d94dd1%3A0x1ac7644c8c0d3aa9!2z7Iqk7ZWc7J20IO2CrOuhnCDsnpDsnYQg7J247IucIOy7nOq1rCDqs7zsnZDtmLjsnZw!5e0!3m2!1sko!2skr!4v1691676958427!5m2!1sko!2skr"
+          allowfullscreen=""
           loading="lazy"
-          title="두드림소방 네이버 지도"
+          title="두드림소방 위치"
         ></iframe>
       </div>
     </div>
@@ -346,6 +404,18 @@
 
       <button type="submit" class="submit-btn">전송하기</button>
     </form>
+  </section>
+
+  <section id="schedule">
+    <h1>📅 일정 관리</h1>
+    <div>
+      <button onclick="prevMonth()">◀ 이전달</button>
+      <span id="currentMonth" style="font-weight:bold; margin: 0 15px;"></span>
+      <button onclick="nextMonth()">다음달 ▶</button>
+    </div>
+    <div id="calendar"></div>
+    <textarea id="memo" placeholder="선택한 날짜 메모를 입력하세요" rows="5"></textarea>
+    <button onclick="saveMemo()">메모 저장</button>
   </section>
 </main>
 
@@ -380,7 +450,24 @@
       }
     });
   });
-</script>
 
-</body>
-</html>
+  // 일정관리 캘린더 스크립트 시작
+  let currentYear, currentMonth;
+  let selectedDate = null;
+  let memos = {};
+
+  function loadMemos() {
+    const data = localStorage.getItem('calendarMemos');
+    memos = data ? JSON.parse(data) : {};
+  }
+
+  function saveMemos() {
+    localStorage.setItem('calendarMemos', JSON.stringify(memos));
+  }
+
+  function buildCalendar(year, month) {
+    currentYear = year;
+    currentMonth = month;
+
+    const currentMonthSpan = document.getElementById('currentMonth');
+    currentMonthSpan.textContent = `${year}년 ${
