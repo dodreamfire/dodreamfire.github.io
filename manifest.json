@@ -1,0 +1,20 @@
+{
+  "name": "두드림소방 일정관리",
+  "short_name": "두드림소방",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#d62828",
+  "theme_color": "#d62828",
+  "icons": [
+    {
+      "src": "두드림소방로고.PNG",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "두드림소방로고.PNG",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
