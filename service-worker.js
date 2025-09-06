@@ -1,18 +1,14 @@
-const CACHE_NAME = "dodreamfire-cache-v1";
-const urlsToCache = [
-  "index.html",
-  "manifest.json",
-  "두드림소방로고.png"
-];
+const cacheName="dodreamfire-cache-v1";
+const filesToCache=["./","./index.html","./manifest.json","./두드림소방로고.png"];
 
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+self.addEventListener("install",e=>{
+  e.waitUntil(
+    caches.open(cacheName).then(cache=>cache.addAll(filesToCache))
   );
 });
 
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request).then(response => response || fetch(event.request))
+self.addEventListener("fetch",e=>{
+  e.respondWith(
+    caches.match(e.request).then(resp=>resp || fetch(e.request))
   );
 });
