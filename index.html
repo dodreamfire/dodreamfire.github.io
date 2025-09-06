@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>두드림소방 일정관리</title>
   <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./dodreamfirelogo.PNG">
   <style>
     body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f4; }
     header { display:flex; align-items:center; background:#0055a5; color:white; padding:10px; }
@@ -21,7 +22,7 @@
 <body>
 
 <header>
-  <img src="./dodreamfire-logo.png" alt="두드림소방 로고">
+  <img src="./dodreamfirelogo.PNG" alt="두드림소방 로고">
   <h1>두드림소방 일정관리</h1>
 </header>
 
@@ -68,7 +69,6 @@
     const firstDay = new Date(year, month, 1).getDay();
     const lastDate = new Date(year, month+1, 0).getDate();
 
-    // 공백
     for(let i=0;i<firstDay;i++){
       const empty = document.createElement("div");
       calendarEl.appendChild(empty);
@@ -119,8 +119,8 @@
     const selected = monthSelect.value.split("-");
     const y = parseInt(selected[0]);
     const m = parseInt(selected[1])-1;
-    const d = 1; // 기본 1일 입력 (세부 메모 기능 추가 가능)
-    db.collection("memos").add({year:y, month:m, day:d, text:val, detail:""});
+    const d = 1; // 기본 1일
+    db.collection("memos").add({year:y, month:m, day:d, text:val});
     memoInput.value="";
     renderCalendar(y,m);
   }

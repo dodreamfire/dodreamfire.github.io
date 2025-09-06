@@ -1,5 +1,5 @@
 const cacheName="dodreamfire-cache-v1";
-const filesToCache=["./","./index.html","./manifest.json","./dodreamfire-logo.png"];
+const filesToCache=["./","./index.html","./manifest.json","./dodreamfirelogo.PNG"];
 
 self.addEventListener("install",e=>{
   e.waitUntil(
