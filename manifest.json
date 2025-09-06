@@ -1,18 +1,13 @@
 {
   "name": "두드림소방 일정관리",
-  "short_name": "두드림일정",
+  "short_name": "두드림소방",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#d32f2f",
+  "background_color": "#0055a5",
+  "theme_color": "#0055a5",
   "icons": [
     {
-      "src": "두드림소방로고.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "두드림소방로고.png",
+      "src": "./dodreamfire-logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
