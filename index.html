@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>두드림소방 일정관리</title>
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="dodreamfirelogo.PNG" type="image/png">
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
     header { display: flex; align-items: center; background: #005cbf; color: white; padding: 10px; }
@@ -13,27 +14,15 @@
     .container { padding: 20px; max-width: 900px; margin: auto; }
 
     /* 요일 */
-    .calendar-header {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 5px;
-    }
-    .calendar-header div {
-      background: #005cbf;
-      color: white;
-      padding: 5px 0;
-      border-radius: 3px;
-    }
+    .calendar-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-weight: bold; text-align: center; margin-bottom: 5px; }
+    .calendar-header div { background: #005cbf; color: white; padding: 5px 0; border-radius: 3px; }
 
     .month-selector { margin-bottom: 20px; }
     .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
     .day { background: white; padding: 10px; border: 1px solid #ccc; min-height: 80px; position: relative; cursor: pointer; }
     .day:hover { background: #e6f0ff; }
     .day .day-number { font-weight: bold; margin-bottom: 5px; }
-    .memo { background: #f0f8ff; padding: 2px 5px; margin-bottom: 3px; font-size: 0.8rem; border-radius: 3px; display: flex; justify-content: space-between; align-items: center; }
+    .memo { background: #f0f8ff; padding: 2px 5px; margin-bottom: 3px; font-size: 0.8rem; border-radius: 3px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
     .memo button { background: red; color: white; border: none; font-size: 0.7rem; padding: 0 4px; border-radius: 3px; cursor: pointer; }
 
     /* 모달 */
@@ -99,6 +88,7 @@
     const memoText = document.getElementById('memo-text');
     const memoList = document.getElementById('memo-list');
     let selectedDate = null;
+    let selectedMemoId = null;
 
     function renderCalendar(year, month) {
       calendar.innerHTML = '';
@@ -110,7 +100,7 @@
         calendar.appendChild(empty);
       }
 
-      for(let d=1;d<=lastDate;d++){
+      for(let d=1; d<=lastDate; d++){
         const dayDiv = document.createElement('div');
         dayDiv.classList.add('day');
         dayDiv.innerHTML = `<div class="day-number">${d}</div>`;
@@ -134,6 +124,18 @@
                 memoDiv.remove();
               };
               memoDiv.appendChild(delBtn);
+
+              // 세부메모 클릭
+              memoDiv.onclick = e=>{
+                e.stopPropagation();
+                modal.style.display = 'flex';
+                memoText.value = data.text;
+                selectedDate = {year, month, day:d};
+                modalDate.textContent = `${year}-${month+1}-${d}`;
+                selectedMemoId = doc.id;
+                loadMemoList(year, month, d);
+              };
+
               dayDiv.appendChild(memoDiv);
             });
           });
@@ -142,53 +144,74 @@
           selectedDate = {year, month, day:d};
           modalDate.textContent = `${year}-${month+1}-${d}`;
           memoText.value = '';
-          memoList.innerHTML = '';
+          selectedMemoId = null;
+          loadMemoList(year, month, d);
           modal.style.display = 'flex';
-
-          db.collection('memos').where('year','==',year).where('month','==',month).where('day','==',d)
-            .get()
-            .then(snapshot=>{
-              memoList.innerHTML = '';
-              snapshot.forEach(doc=>{
-                const data = doc.data();
-                const item = document.createElement('div');
-                item.classList.add('memo');
-                item.textContent = data.text;
-
-                const delBtn = document.createElement('button');
-                delBtn.textContent = 'X';
-                delBtn.onclick = e=>{
-                  e.stopPropagation();
-                  db.collection('memos').doc(doc.id).delete();
-                  item.remove();
-                };
-                item.appendChild(delBtn);
-                memoList.appendChild(item);
-              });
-            });
         };
       }
     }
 
-    monthInput.addEventListener('change',()=>{
-      const [y,m] = monthInput.value.split('-');
-      renderCalendar(parseInt(y), parseInt(m)-1);
-    });
+    function loadMemoList(year, month, day){
+      memoList.innerHTML = '';
+      db.collection('memos').where('year','==',year).where('month','==',month).where('day','==',day)
+        .get()
+        .then(snapshot=>{
+          snapshot.forEach(doc=>{
+            const data = doc.data();
+            const item = document.createElement('div');
+            item.classList.add('memo');
+            item.textContent = data.text;
+
+            const delBtn = document.createElement('button');
+            delBtn.textContent = 'X';
+            delBtn.onclick = e=>{
+              e.stopPropagation();
+              db.collection('memos').doc(doc.id).delete();
+              item.remove();
+            };
+            item.appendChild(delBtn);
+
+            // 세부메모 클릭
+            item.onclick = e=>{
+              e.stopPropagation();
+              memoText.value = data.text;
+              selectedMemoId = doc.id;
+            };
+
+            memoList.appendChild(item);
+          });
+        });
+    }
 
     document.getElementById('close-modal').onclick = ()=>{ modal.style.display = 'none'; };
 
     document.getElementById('save-memo').onclick = ()=>{
       if(!memoText.value.trim()) return;
-      db.collection('memos').add({
-        year:selectedDate.year,
-        month:selectedDate.month,
-        day:selectedDate.day,
-        text:memoText.value.trim()
-      }).then(()=>{
-        renderCalendar(selectedDate.year, selectedDate.month);
-        memoText.value='';
-      });
+      if(selectedMemoId){ // 기존 메모 수정
+        db.collection('memos').doc(selectedMemoId).update({
+          text: memoText.value.trim()
+        }).then(()=>{
+          renderCalendar(selectedDate.year, selectedDate.month);
+          selectedMemoId = null;
+          memoText.value = '';
+        });
+      } else { // 새 메모 추가
+        db.collection('memos').add({
+          year:selectedDate.year,
+          month:selectedDate.month,
+          day:selectedDate.day,
+          text:memoText.value.trim()
+        }).then(()=>{
+          renderCalendar(selectedDate.year, selectedDate.month);
+          memoText.value = '';
+        });
+      }
     };
+
+    monthInput.addEventListener('change',()=>{
+      const [y,m] = monthInput.value.split('-');
+      renderCalendar(parseInt(y), parseInt(m)-1);
+    });
 
     // 초기 렌더
     renderCalendar(today.getFullYear(), today.getMonth());
