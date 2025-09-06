@@ -553,7 +553,9 @@
   });
 
   fillMonthSelect();
-  monthSelect.value = `${startYear}-${pad(startMonth)}`;
+ const today = new Date();
+monthSelect.value = `${today.getFullYear()}-${pad(today.getMonth()+1)}`;
+monthSelect.dispatchEvent(new Event('change'));
   monthSelect.dispatchEvent(new Event('change'));
 
   // PWA 서비스 워커 등록
