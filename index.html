@@ -531,13 +531,21 @@
     addMemoBtn.disabled = newMemoTA.value.trim() === '' || !currentUser || !selectedDate;
   };
 
-  monthSelect.onchange = () => {
-    const [y,m] = monthSelect.value.split('-');
-    renderCalendar(parseInt(y), parseInt(m));
-    selectedDate = null;
-    selectedDateDisplay.textContent = '없음';
-    memoList.innerHTML = '<li>날짜를 선택하세요.</li>';
-  };
+ monthSelect.onchange = () => {
+  const [y,m] = monthSelect.value.split('-');
+  const year = parseInt(y);
+  const month = parseInt(m);
+
+  // 새 달 렌더링
+  renderCalendar(year, month);
+
+  // 선택 날짜를 새 달 1일로 설정
+  selectedDate = `${year}-${pad(month)}-01`;
+  selectedDateDisplay.textContent = selectedDate;
+
+  // 해당 날짜 메모 렌더링
+  renderMemosForDate(selectedDate);
+};
 
   auth.onAuthStateChanged(user => {
     updateAuthUI(user);
