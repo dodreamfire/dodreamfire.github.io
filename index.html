@@ -3,175 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>두드림소방 캘린더</title>
-<link rel="icon" href="dodreamfire-logo.PNG">
-<style>
-  body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
-  #calendar { display: flex; flex-direction: column; max-width: 700px; margin-bottom: 20px; }
-  .calendar-row { display: flex; }
-  .calendar-cell { flex: 1; border: 1px solid #ddd; min-height: 80px; position: relative; padding: 2px; cursor: pointer; background: #fff; margin: 1px; }
-  .calendar-header { background: #333; color: #fff; text-align: center; font-weight: bold; }
-  .date-num { font-weight: bold; margin-bottom: 2px; }
-  .memo-text { font-size: 0.8rem; color: #0077cc; overflow: hidden; }
-  #memo-section { max-width: 700px; }
-  #memo-list li { margin-bottom: 5px; list-style: none; padding: 5px; background: #fff; border: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
-  #memo-list button { margin-left: 5px; padding: 2px 5px; font-size: 0.8rem; background: #ff4d4d; color: #fff; border: none; cursor: pointer; border-radius: 3px; }
-  #memo-input { width: 100%; padding: 5px; margin-bottom: 5px; }
-  #save-btn { padding: 5px 10px; background: #0077cc; color: #fff; border: none; cursor: pointer; border-radius: 3px; }
-</style>
+<title>두드림소방 메모 달력</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <h1>두드림소방 메모 달력</h1>
+  <table id="calendar"></table>
 
-<h1>✅ 두드림소방 일정 관리</h1>
+  <!-- 메모 팝업 -->
+  <div id="memoPopup" class="popup">
+    <div class="popup-content">
+      <span id="closePopup" class="close">&times;</span>
+      <h3 id="memoDate">날짜</h3>
+      <input type="text" id="memoInput" placeholder="메모 제목 입력">
+      <button id="saveMemo">저장</button>
+      <ul id="memoList"></ul>
+    </div>
+  </div>
 
-<div id="calendar"></div>
-
-<div id="memo-section">
-  <input type="text" id="memo-input" placeholder="메모 입력">
-  <button id="save-btn">추가/저장</button>
-  <ul id="memo-list"></ul>
-</div>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-<script>
-  // Firebase 구성
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-
-  const calendarEl = document.getElementById("calendar");
-  const memoListEl = document.getElementById("memo-list");
-  const memoInputEl = document.getElementById("memo-input");
-  const saveBtn = document.getElementById("save-btn");
-
-  let selectedDate = null;
-
-  function renderCalendar() {
-    calendarEl.innerHTML = "";
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-
-    const weekdays = ["월","화","수","목","금","토","일"];
-    const headerRow = document.createElement("div");
-    headerRow.classList.add("calendar-row");
-    weekdays.forEach(day => {
-      const cell = document.createElement("div");
-      cell.classList.add("calendar-cell", "calendar-header");
-      cell.innerText = day;
-      headerRow.appendChild(cell);
-    });
-    calendarEl.appendChild(headerRow);
-
-    const startDay = (firstDay.getDay() + 6) % 7;
-    let row = document.createElement("div");
-    row.classList.add("calendar-row");
-    for(let i=0;i<startDay;i++){
-      const cell = document.createElement("div");
-      cell.classList.add("calendar-cell");
-      row.appendChild(cell);
-    }
-
-    for(let date=1; date<=lastDay.getDate(); date++){
-      const cell = document.createElement("div");
-      cell.classList.add("calendar-cell");
-      cell.innerHTML = `<div class="date-num">${date}</div><div class="memo-text" id="memo-${date}"></div>`;
-      cell.addEventListener("click",()=>selectDate(date));
-      row.appendChild(cell);
-      if((date+startDay)%7===0 || date===lastDay.getDate()){
-        calendarEl.appendChild(row);
-        row = document.createElement("div");
-        row.classList.add("calendar-row");
-      }
-    }
-
-    loadMemos(year, month+1);
-  }
-
-  function selectDate(date){
-    selectedDate = date;
-    memoInputEl.value = "";
-    memoListEl.innerHTML = "";
-    loadMemos(new Date().getFullYear(), new Date().getMonth()+1);
-  }
-
-  saveBtn.addEventListener("click", async ()=>{
-    if(!selectedDate || memoInputEl.value.trim()==="") return;
-    const docId = `${new Date().getFullYear()}-${new Date().getMonth()+1}-${selectedDate}`;
-    const memoText = memoInputEl.value.trim();
-    await db.collection("memos").doc(docId).set({
-      memos: firebase.firestore.FieldValue.arrayUnion(memoText)
-    }, {merge:true});
-    memoInputEl.value = "";
-    loadMemos(new Date().getFullYear(), new Date().getMonth()+1);
-  });
-
-  async function loadMemos(year, month){
-    memoListEl.innerHTML = "";
-    for(let date=1; date<=31; date++){
-      const docId = `${year}-${month}-${date}`;
-      const doc = await db.collection("memos").doc(docId).get();
-      const memoDiv = document.getElementById(`memo-${date}`);
-      if(doc.exists && doc.data().memos){
-        const memos = doc.data().memos;
-        if(memoDiv) memoDiv.innerHTML = memos.map(m=>truncateText(m,2)).join("<br>");
-        if(date===selectedDate){
-          memos.forEach((m, idx)=>{
-            const li = document.createElement("li");
-            li.textContent = m;
-            li.addEventListener("click", ()=>editMemo(docId, idx));
-            const delBtn = document.createElement("button");
-            delBtn.textContent = "삭제";
-            delBtn.addEventListener("click", (e)=>{
-              e.stopPropagation();
-              deleteMemo(docId, m);
-            });
-            li.appendChild(delBtn);
-            memoListEl.appendChild(li);
-          });
-        }
-      } else if(memoDiv) memoDiv.innerHTML = "";
-    }
-  }
-
-  function truncateText(text, lines){
-    const maxChars = lines*20;
-    return text.length>maxChars? text.substr(0,maxChars)+"..." : text;
-  }
-
-  function editMemo(docId, index){
-    const newText = prompt("세부 메모 입력", memoListEl.children[index].textContent.replace("삭제",""));
-    if(!newText) return;
-    db.collection("memos").doc(docId).get().then(doc=>{
-      const memos = doc.data().memos;
-      memos[index] = newText;
-      db.collection("memos").doc(docId).set({memos});
-      loadMemos(new Date().getFullYear(), new Date().getMonth()+1);
-    });
-  }
-
-  function deleteMemo(docId, text){
-    db.collection("memos").doc(docId).update({
-      memos: firebase.firestore.FieldValue.arrayRemove(text)
-    }).then(()=>loadMemos(new Date().getFullYear(), new Date().getMonth()+1));
-  }
-
-  renderCalendar();
-</script>
-
+  <script type="module" src="app.js"></script>
 </body>
 </html>
