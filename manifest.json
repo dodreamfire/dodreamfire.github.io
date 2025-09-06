@@ -3,12 +3,17 @@
   "short_name": "두드림소방",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#005cbf",
-  "theme_color": "#005cbf",
+  "background_color": "#d62828",
+  "theme_color": "#d62828",
   "icons": [
     {
       "src": "dodreamfirelogo.PNG",
       "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "dodreamfirelogo.PNG",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
