@@ -1,24 +1,18 @@
-const CACHE_NAME = 'dodream-cache-v1';
+const CACHE_NAME = "dodreamfire-cache-v1";
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/두드림소방로고.PNG',
-  // 필요하면 js, css 파일 경로도 추가
+  "index.html",
+  "manifest.json",
+  "두드림소방로고.png"
 ];
 
-self.addEventListener('install', event => {
+self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(urlsToCache);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
 });
 
-self.addEventListener('fetch', event => {
+self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
+    caches.match(event.request).then(response => response || fetch(event.request))
   );
 });
