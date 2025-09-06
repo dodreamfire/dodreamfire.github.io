@@ -1,116 +1,100 @@
-import { db } from "./firebase-config.js";
-import { collection, doc, getDocs, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-let selectedDate = new Date();
-let selectedMemoId = null;
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
 
-const calendarEl = document.getElementById('calendar');
-const monthYearEl = document.getElementById('monthYear');
-const prevMonthBtn = document.getElementById('prevMonth');
-const nextMonthBtn = document.getElementById('nextMonth');
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const memoCol = collection(db, "memos");
 
-const modal = document.getElementById('memoModal');
-const closeModal = modal.querySelector('.close');
-const memoText = document.getElementById('memoText');
-const addMemoBtn = document.getElementById('addMemo');
-const memoList = document.getElementById('memoList');
-const modalDateEl = document.getElementById('modalDate');
+const calendar = document.getElementById("calendar");
+const memoModal = document.getElementById("memoModal");
+const memoDateEl = document.getElementById("memoDate");
+const memoContent = document.getElementById("memoContent");
+const memoDetails = document.getElementById("memoDetails");
+const saveMemo = document.getElementById("saveMemo");
+const closeModal = document.getElementById("closeModal");
 
-function renderCalendar(date){
-  calendarEl.innerHTML = '';
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  monthYearEl.textContent = `${year}년 ${month+1}월`;
+let selectedDate = null;
 
-  const firstDay = new Date(year, month,1);
-  const lastDay = new Date(year, month+1,0);
-  const startWeek = (firstDay.getDay()+6)%7; // 월요일 시작
-  const totalDays = lastDay.getDate();
+function renderCalendar() {
+  calendar.innerHTML = "";
+  const weekdays = ["월","화","수","목","금","토","일"];
+  weekdays.forEach(day => {
+    const dayEl = document.createElement("div");
+    dayEl.className = "day";
+    dayEl.textContent = day;
+    calendar.appendChild(dayEl);
+  });
 
-  for(let i=0;i<startWeek;i++){
-    const empty = document.createElement('div');
-    calendarEl.appendChild(empty);
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for(let i=1; i<=daysInMonth; i++) {
+    const dayEl = document.createElement("div");
+    dayEl.className = "day";
+    dayEl.textContent = i;
+    dayEl.addEventListener("click", () => openMemoModal(`${year}-${month+1}-${i}`));
+    calendar.appendChild(dayEl);
   }
 
-  for(let day=1; day<=totalDays; day++){
-    const dayEl = document.createElement('div');
-    dayEl.className='day';
-    dayEl.dataset.day=day;
-    dayEl.innerHTML=`<div class="day-number">${day}</div><div class="memo-preview" id="memo-${day}"></div>`;
-    dayEl.addEventListener('click',()=>openModal(year, month, day));
-    calendarEl.appendChild(dayEl);
-    loadMemos(year, month, day);
+  loadMemos();
+}
+
+async function loadMemos() {
+  const snapshot = await getDocs(memoCol);
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const dayCells = Array.from(document.getElementsByClassName("day"));
+    dayCells.forEach(cell => {
+      if(cell.textContent === data.date.split('-')[2]) {
+        const memoEl = document.createElement("div");
+        memoEl.className = "memo";
+        memoEl.textContent = data.content;
+        memoEl.addEventListener("click", () => openMemoModal(data.date, docSnap.id, data));
+        cell.appendChild(memoEl);
+      }
+    });
+  });
+}
+
+function openMemoModal(date, docId=null, data=null) {
+  selectedDate = {date, docId};
+  memoDateEl.textContent = date;
+  memoContent.value = data ? data.content : "";
+  memoDetails.value = data ? data.details : "";
+  memoModal.style.display = "flex";
+}
+
+saveMemo.addEventListener("click", async () => {
+  if(selectedDate.docId) {
+    await updateDoc(doc(memoCol, selectedDate.docId), {
+      content: memoContent.value,
+      details: memoDetails.value
+    });
+  } else {
+    await addDoc(memoCol, {
+      date: selectedDate.date,
+      content: memoContent.value,
+      details: memoDetails.value
+    });
   }
-}
+  memoModal.style.display = "none";
+  renderCalendar();
+});
 
-prevMonthBtn.onclick=()=>{selectedDate.setMonth(selectedDate.getMonth()-1); renderCalendar(selectedDate);}
-nextMonthBtn.onclick=()=>{selectedDate.setMonth(selectedDate.getMonth()+1); renderCalendar(selectedDate);}
+closeModal.addEventListener("click", () => {
+  memoModal.style.display = "none";
+});
 
-function openModal(y,m,d){
-  modal.style.display='flex';
-  selectedDate = new Date(y,m,d);
-  modalDateEl.textContent=`${y}년 ${m+1}월 ${d}일`;
-  memoText.value='';
-  selectedMemoId=null;
-  loadMemoList(y,m,d);
-}
-
-closeModal.onclick=()=>{modal.style.display='none';}
-
-window.onclick = function(e){ if(e.target==modal) modal.style.display='none'; }
-
-async function loadMemos(y,m,d){
-  const snapshot = await getDocs(collection(db,'memos'));
-  snapshot.forEach(docu=>{
-    const data = docu.data();
-    const docDate = new Date(data.date);
-    if(docDate.getFullYear()==y && docDate.getMonth()==m && docDate.getDate()==d){
-      const memoEl = document.getElementById(`memo-${d}`);
-      memoEl.textContent = data.content.split('\n').slice(0,2).join('\n');
-    }
-  });
-}
-
-async function loadMemoList(y,m,d){
-  memoList.innerHTML='';
-  const snapshot = await getDocs(collection(db,'memos'));
-  snapshot.forEach(docu=>{
-    const data = docu.data();
-    const docDate = new Date(data.date);
-    if(docDate.getFullYear()==y && docDate.getMonth()==m && docDate.getDate()==d){
-      const div = document.createElement('div');
-      const span = document.createElement('span');
-      span.textContent=data.content;
-      span.onclick=()=>{ memoText.value=data.content; selectedMemoId=docu.id; };
-      const delBtn = document.createElement('button');
-      delBtn.textContent='삭제';
-      delBtn.onclick=async e=>{
-        e.stopPropagation();
-        if(confirm('정말 삭제하시겠습니까?')){
-          await deleteDoc(doc(db,'memos',docu.id));
-          loadMemoList(y,m,d);
-          renderCalendar(selectedDate);
-        }
-      };
-      div.appendChild(span);
-      div.appendChild(delBtn);
-      memoList.appendChild(div);
-    }
-  });
-}
-
-addMemoBtn.onclick=async ()=>{
-  const content = memoText.value.trim();
-  if(!content) return alert('메모를 입력하세요.');
-  const newDoc = selectedMemoId ? doc(db,'memos',selectedMemoId) : doc(collection(db,'memos'));
-  await setDoc(newDoc,{
-    content,
-    date:selectedDate.toISOString()
-  });
-  memoText.value='';
-  selectedMemoId=null;
-  loadMemoList(selectedDate.getFullYear(),selectedDate.getMonth(),selectedDate.getDate());
-  renderCalendar(selectedDate);
-}
-
-renderCalendar(selectedDate);
+renderCalendar();
